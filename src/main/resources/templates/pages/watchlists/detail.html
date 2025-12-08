@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/base}"
+  lang="id"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Tontonan</title>
+  </head>
+  <body>
+    <div layout:fragment="content" class="mt-3">
+      <div class="card">
+        <div class="card-header d-flex bg-light sticky-top align-items-center">
+          <div class="flex-fill">
+            <a th:href="@{/watchlists}" class="text-decoration-none text-muted mb-2 d-inline-block">
+              <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            <h3 class="mb-0">
+              [[${watchList.title}]]
+              <!-- Badge Tipe -->
+              <span th:if="${watchList.type == 'Movie'}" class="badge bg-primary fs-6 ms-2">Movie</span>
+              <span th:if="${watchList.type == 'Series'}" class="badge bg-info fs-6 ms-2">Series</span>
+              
+              <!-- Badge Status -->
+              <span th:if="${watchList.isWatched}" class="badge bg-success fs-6 ms-1">
+                <i class="bi bi-check-circle-fill"></i> Watched
+              </span>
+              <span th:unless="${watchList.isWatched}" class="badge bg-secondary fs-6 ms-1">
+                <i class="bi bi-hourglass-split"></i> Plan
+              </span>
+            </h3>
+          </div>
+          <div>
+            <div class="mb-2">
+              <a th:href="@{/auth/logout}" class="btn btn-sm btn-outline-danger w-100">Keluar</a>
+            </div>
+            <div>
+              <button
+                class="btn btn-sm btn-warning w-100"
+                data-bs-target="#editCoverWatchListModal"
+                data-bs-toggle="modal"
+              >
+                <i class="bi bi-upload"></i> Ganti Poster
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="row">
+             <!-- Bagian Poster (Kiri) -->
+            <div class="col-md-4 text-center mb-4 mb-md-0">
+              <div th:if="${watchList.cover}" class="shadow rounded overflow-hidden position-relative d-inline-block">
+                <img
+                  th:src="@{'/watchlists/cover/' + ${watchList.cover}}"
+                  alt="Poster Film"
+                  class="img-fluid"
+                  style="max-height: 450px; object-fit: cover;"
+                />
+              </div>
+              <div th:unless="${watchList.cover}" class="bg-light d-flex align-items-center justify-content-center rounded shadow-sm" style="height: 400px; width: 100%;">
+                <div class="text-center text-muted">
+                   <i class="bi bi-film" style="font-size: 4rem;"></i>
+                   <p class="mt-2">Poster belum diupload</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bagian Info Detail (Kanan) -->
+            <div class="col-md-8">
+              <div class="card border-0">
+                 <div class="card-body p-0">
+                    <h5 class="text-primary mb-3 border-bottom pb-2">Informasi Detail</h5>
+                    <table class="table table-borderless">
+                      <tbody>
+                        <tr>
+                          <th style="width: 150px;" class="text-muted">Genre</th>
+                          <td>
+                            <span class="badge bg-dark" th:text="${watchList.genre}"></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="text-muted">Tahun Rilis</th>
+                          <td class="fw-bold" th:text="${watchList.releaseYear}"></td>
+                        </tr>
+                        <tr>
+                          <th class="text-muted">Rating Pribadi</th>
+                          <td>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-star-fill text-warning me-2"></i>
+                                <span class="fw-bold fs-5" th:text="${watchList.rating}"></span>
+                                <span class="text-muted ms-1">/ 10</span>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="text-muted">Catatan</th>
+                          <td>
+                            <p class="mb-0 fst-italic text-break" 
+                               th:text="${watchList.notes != null && !watchList.notes.isEmpty() ? watchList.notes : '-'}"
+                               style="white-space: pre-wrap;"></p>
+                          </td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted">Status Tonton</th>
+                            <td>
+                                <form th:action="@{/watchlists/toggle-status}" method="post" class="d-inline">
+                                    <input type="hidden" name="id" th:value="${watchList.id}">
+                                    <button type="submit" 
+                                            class="btn btn-sm" 
+                                            th:classappend="${watchList.isWatched} ? 'btn-outline-secondary' : 'btn-outline-success'">
+                                        <i class="bi" th:classappend="${watchList.isWatched} ? 'bi-x-circle' : 'bi-check-circle'"></i>
+                                        <span th:text="${watchList.isWatched} ? 'Tandai Belum Ditonton' : 'Tandai Sudah Ditonton'"></span>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                          <th class="text-muted"><small>Ditambahkan</small></th>
+                          <td><small th:text="${#temporals.format(watchList.createdAt, 'd MMM yyyy HH:mm')}"></small></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Upload Cover -->
+      <div th:replace="~{models/watchlists/edit-cover :: editCoverWatchListModal}"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script layout:fragment="others-js">
+      document.addEventListener("DOMContentLoaded", function () {
+        /* Cek apakah modal upload perlu dibuka otomatis (misal setelah error validasi) */
+        var editCoverWatchListModalOpen = "[[${editCoverWatchListModalOpen}]]" === "true";
+        if (editCoverWatchListModalOpen) {
+          var uploadModal = new bootstrap.Modal(
+            document.getElementById("editCoverWatchListModal")
+          );
+          uploadModal.show();
+        }
+      });
+    </script>
+  </body>
+</html>

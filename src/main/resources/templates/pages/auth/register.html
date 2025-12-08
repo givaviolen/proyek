@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/base}"
+>
+  <head>
+    <title>Register - WatchList</title>
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        /* ================= DEFINISI KEYFRAMES ANIMASI ================= */
+        @keyframes popUp {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            60% { opacity: 1; transform: scale(1.02) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translate3d(0, -30px, 0); }
+            to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ================= STYLE TAMPILAN ================= */
+
+        /* Menghapus ikon mata default dari Edge/Windows */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+
+        .register-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(
+                115deg, 
+                #fcfbf4 50%, 
+                #c4a45e 50%, 
+                #c4a45e 51.5%, 
+                #0e2a47 51.5%
+            );
+            z-index: 1000;
+        }
+
+        .brand-logo {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            font-size: 42px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: 'Segoe UI', sans-serif;
+            text-transform: none;
+            opacity: 0;
+            animation: fadeInDown 0.8s ease-out forwards;
+        }
+
+        .brand-logo img { height: 50px; width: auto; }
+        .text-watch { color: #0e2a47; }
+        .text-list { color: #c4a45e; }
+
+        .custom-card {
+            background-color: #fcfbf4;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 2px solid #000;
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            animation: popUp 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.2s forwards;
+        }
+
+        .card-header-custom {
+            background-color: #cbb26a;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #000;
+        }
+
+        .card-header-custom h3 {
+            margin: 0;
+            color: #1a1a1a;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-size: 24px;
+        }
+
+        .card-body-custom { padding: 30px; }
+
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group-custom i.icon-start {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            z-index: 10;
+        }
+        
+        .input-group-custom i.icon-end {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 12px 45px 12px 45px; 
+            background-color: #f0eee4;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            outline: none;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-custom:focus {
+            background-color: #fff;
+            border-color: #cbb26a;
+            box-shadow: 0 0 8px rgba(203, 178, 106, 0.3);
+        }
+
+        .is-invalid { border-color: #dc3545 !important; }
+        .invalid-feedback { font-size: 12px; color: #dc3545; margin-top: 5px; display: block; }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: #333;
+            text-decoration: none;
+            margin-bottom: 25px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .forgot-link:hover { color: #c4a45e; }
+
+        .login-text {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .login-text a {
+            color: #c4a45e;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .login-text a:hover { text-decoration: underline; }
+
+        .btn-custom {
+            width: 100%;
+            padding: 12px;
+            background-color: #0e2a47;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-custom:hover { background-color: #1a416a; transform: translateY(-2px); }
+        .btn-custom:active { transform: translateY(0); }
+        
+        /* CSS .corner-decoration TELAH DIHAPUS */
+    </style>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="register-container">
+        
+        <div class="brand-logo">
+            <img th:src="@{/assets/images/logo.png}" alt="Logo">
+            <div>
+                <span class="text-watch">Watch</span><span class="text-list">List</span>
+            </div>
+        </div>
+
+        <!-- DIV .corner-decoration TELAH DIHAPUS -->
+
+        <form th:action="@{/auth/register/post}" method="post" th:object="${registerForm}">
+            <div class="custom-card">
+                <div class="card-header-custom">
+                    <h3>Register</h3>
+                </div>
+
+                <div class="card-body-custom">
+                    
+                    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger p-2 mb-3" style="font-size: 14px;">
+                        <th:block th:each="err : ${#fields.globalErrors()}" th:text="${err}"></th:block>
+                    </div>
+
+                    <div class="input-group-custom">
+                        <i class="bi bi-person icon-start"></i>
+                        <input type="text" class="form-control-custom" id="inputName" th:field="*{name}"
+                            th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" placeholder="Username" />
+                        <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback">
+                            <th:block th:each="err : ${#fields.errors('name')}" th:text="${err}"></th:block>
+                        </div>
+                    </div>
+
+                    <div class="input-group-custom">
+                        <i class="bi bi-envelope icon-start"></i> 
+                        <input type="email" class="form-control-custom" id="inputEmail" th:field="*{email}"
+                            th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'" placeholder="Email" />
+                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                            <th:block th:each="err : ${#fields.errors('email')}" th:text="${err}"></th:block>
+                        </div>
+                    </div>
+
+                    <div class="input-group-custom">
+                        <i class="bi bi-lock icon-start"></i>
+                        <!-- Input Password -->
+                        <input
+                            type="password"
+                            class="form-control-custom"
+                            id="inputPassword"
+                            th:field="*{password}"
+                            th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                            placeholder="Password"
+                        />
+                        <!-- Logo Mata Custom -->
+                        <i class="bi bi-eye icon-end" onclick="togglePassword()"></i>
+
+                        <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback">
+                            <th:block th:each="err : ${#fields.errors('password')}" th:text="${err}"></th:block>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-custom">Create Account</button>
+
+                    <div class="login-text">
+                        Do you already have an account? <a th:href="@{/auth/login}">Log in</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+
+    <th:block layout:fragment="others-js">
+        <script>
+            function togglePassword() {
+                const passwordInput = document.getElementById('inputPassword');
+                const icon = document.querySelector('.icon-end');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            }
+        </script>
+    </th:block>
+  </body>
+</html>
