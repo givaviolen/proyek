@@ -21,6 +21,24 @@ class CoverWatchListFormTests {
         mockMultipartFile = mock(MultipartFile.class);
     }
 
+    // ----------------------------------------------------------------
+    // PERBAIKAN UTAMA: Menambahkan Test untuk Constructor Parameter
+    // ----------------------------------------------------------------
+    @Test
+    @DisplayName("Constructor dengan parameter mengatur id dan coverFile dengan benar")
+    void constructor_dengan_parameter_bekerja_dengan_benar() {
+        // Arrange
+        UUID expectedId = UUID.randomUUID();
+        
+        // Act
+        // Ini akan menutupi baris merah pada Jacoco (Constructor parameter)
+        CoverWatchListForm form = new CoverWatchListForm(expectedId, mockMultipartFile);
+
+        // Assert
+        assertEquals(expectedId, form.getId());
+        assertEquals(mockMultipartFile, form.getCoverFile());
+    }
+
     @Test
     @DisplayName("Constructor default membuat objek kosong")
     void constructor_default_membuat_objek_kosong() {
@@ -168,49 +186,55 @@ class CoverWatchListFormTests {
         assertFalse(result);
     }
 
+    // ----------------------------------------------------------------
+    // UPDATE: Menambahkan variasi content type untuk Branch Coverage 100%
+    // ----------------------------------------------------------------
+
     @Test
     @DisplayName("isValidImage return true untuk image/jpeg")
     void isValidImage_return_true_untuk_image_jpeg() {
-        // Arrange
         when(mockMultipartFile.isEmpty()).thenReturn(false);
         when(mockMultipartFile.getContentType()).thenReturn("image/jpeg");
         coverWatchListForm.setCoverFile(mockMultipartFile);
+        assertTrue(coverWatchListForm.isValidImage());
+    }
 
-        // Act
-        boolean result = coverWatchListForm.isValidImage();
-
-        // Assert
-        assertTrue(result);
+    @Test
+    @DisplayName("isValidImage return true untuk image/jpg")
+    void isValidImage_return_true_untuk_image_jpg() {
+        // Ini ditambahkan karena di kode ada check .equals("image/jpg")
+        when(mockMultipartFile.isEmpty()).thenReturn(false);
+        when(mockMultipartFile.getContentType()).thenReturn("image/jpg");
+        coverWatchListForm.setCoverFile(mockMultipartFile);
+        assertTrue(coverWatchListForm.isValidImage());
     }
 
     @Test
     @DisplayName("isValidImage return true untuk image/png")
     void isValidImage_return_true_untuk_image_png() {
-        // Arrange
         when(mockMultipartFile.isEmpty()).thenReturn(false);
         when(mockMultipartFile.getContentType()).thenReturn("image/png");
         coverWatchListForm.setCoverFile(mockMultipartFile);
+        assertTrue(coverWatchListForm.isValidImage());
+    }
 
-        // Act
-        boolean result = coverWatchListForm.isValidImage();
-
-        // Assert
-        assertTrue(result);
+    @Test
+    @DisplayName("isValidImage return true untuk image/gif")
+    void isValidImage_return_true_untuk_image_gif() {
+        // Ini ditambahkan karena di kode ada check .equals("image/gif")
+        when(mockMultipartFile.isEmpty()).thenReturn(false);
+        when(mockMultipartFile.getContentType()).thenReturn("image/gif");
+        coverWatchListForm.setCoverFile(mockMultipartFile);
+        assertTrue(coverWatchListForm.isValidImage());
     }
 
     @Test
     @DisplayName("isValidImage return true untuk image/webp")
     void isValidImage_return_true_untuk_image_webp() {
-        // Arrange
         when(mockMultipartFile.isEmpty()).thenReturn(false);
         when(mockMultipartFile.getContentType()).thenReturn("image/webp");
         coverWatchListForm.setCoverFile(mockMultipartFile);
-
-        // Act
-        boolean result = coverWatchListForm.isValidImage();
-
-        // Assert
-        assertTrue(result);
+        assertTrue(coverWatchListForm.isValidImage());
     }
 
     @Test
