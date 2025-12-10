@@ -10,30 +10,24 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <!-- Modal Body -->
-                <!-- PENTING: enctype="multipart/form-data" wajib ada untuk upload file -->
-                <form th:action="@{/watchlists/save}" method="post" enctype="multipart/form-data" th:object="${watchListForm}">
+                <!-- FORM UPDATE: Menggunakan th:action dan method="post" -->
+                <!-- Enctype multipart disiapkan jika nanti Anda ingin support upload di create -->
+                <form th:action="@{/watchlists/add}" method="post" enctype="multipart/form-data">
                     <div class="modal-body">
                         
                         <div class="row">
                             <!-- Kolom Kiri: Upload Poster -->
                             <div class="col-md-4 mb-3 d-flex flex-column align-items-center">
                                 <label class="form-label fw-bold w-100">Poster Image</label>
-                                
-                                <!-- Area Preview Gambar -->
                                 <div class="mb-2" style="width: 100%; height: 250px; border: 2px dashed #c4a45e; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: #f0eee4;">
-                                    <!-- Gambar Preview (Hidden default) -->
                                     <img id="imgPreviewAdd" src="#" alt="Preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-                                    
-                                    <!-- Placeholder Text/Icon (Show default) -->
                                     <div id="placeholderAdd" class="text-center text-muted">
                                         <i class="bi bi-image fs-1"></i>
                                         <div style="font-size: 12px;">No Image Selected</div>
                                     </div>
                                 </div>
-
-                                <!-- Input File -->
-                                <input class="form-control form-control-sm" type="file" id="coverImage" name="coverImage" accept="image/*" onchange="previewImageAdd(this)">
+                                <!-- Catatan: Saat ini controller /add belum memproses file, user perlu edit cover setelah create -->
+                                <input class="form-control form-control-sm" type="file" id="addCoverImage" name="coverImage" accept="image/*" onchange="previewImageAdd(this)">
                                 <div class="form-text text-muted" style="font-size: 11px;">Format: JPG, PNG, JPEG</div>
                             </div>
 
@@ -42,30 +36,27 @@
                                 
                                 <!-- Title -->
                                 <div class="mb-3">
-                                    <label for="title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Inception, Breaking Bad" required>
+                                    <label for="addTitle" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="addTitle" name="title" placeholder="e.g., Inception" required>
                                 </div>
 
                                 <div class="row">
                                     <!-- Type -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="type" class="form-label fw-bold">Type <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="type" name="type" required>
-                                            <option value="" disabled selected>Select Type</option>
-                                            <option value="Movie">Movie</option>
+                                        <label for="addType" class="form-label fw-bold">Type <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="addType" name="type" required>
+                                            <option value="Movie" selected>Movie</option>
                                             <option value="Series">Series</option>
                                         </select>
                                     </div>
 
-                                    <!-- Status (UPDATED: 3 Options) -->
+                                    <!-- Status (UPDATE: Name menjadi isWatched dan Value menjadi true/false) -->
                                     <div class="col-md-6 mb-3">
-                                        <!-- Perhatikan name="status", pastikan Entity Java Anda punya field 'status' bertipe String/Enum -->
-                                        <label for="status" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="status" name="status" required>
-                                            <option value="" disabled selected>Select Status</option>
-                                            <option value="Plan to Watch">Plan to Watch</option>
-                                            <option value="Watching">Watching</option>
-                                            <option value="Watched">Watched</option>
+                                        <label for="addStatus" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="addStatus" name="isWatched" required>
+                                            <option value="false" selected>Plan to Watch</option>
+                                            <option value="false">Watching</option> <!-- Watching dianggap belum selesai (false) -->
+                                            <option value="true">Watched</option>
                                         </select>
                                     </div>
                                 </div>
@@ -73,27 +64,27 @@
                                 <div class="row">
                                     <!-- Genre -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="genre" class="form-label fw-bold">Genre <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="genre" name="genre" placeholder="e.g., Sci-Fi, Drama" required>
+                                        <label for="addGenre" class="form-label fw-bold">Genre <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="addGenre" name="genre" placeholder="e.g., Sci-Fi" required>
                                     </div>
 
                                     <!-- Release Year -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="releaseYear" class="form-label fw-bold">Release Year <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="releaseYear" name="releaseYear" placeholder="e.g., 2024" required>
+                                        <label for="addReleaseYear" class="form-label fw-bold">Release Year <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="addReleaseYear" name="releaseYear" placeholder="e.g., 2024" required>
                                     </div>
                                 </div>
 
                                 <!-- Rating -->
                                 <div class="mb-3">
-                                    <label for="rating" class="form-label fw-bold">Rating (1-10) <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="rating" name="rating" min="1" max="10" step="0.1" placeholder="Enter rating (1-10)" required>
+                                    <label for="addRating" class="form-label fw-bold">Rating (1-10) <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="addRating" name="rating" min="1" max="10" placeholder="Enter rating" required>
                                 </div>
 
                                 <!-- Notes -->
                                 <div class="mb-3">
-                                    <label for="notes" class="form-label fw-bold">Notes / Review</label>
-                                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Write your thoughts about this movie..."></textarea>
+                                    <label for="addNotes" class="form-label fw-bold">Notes / Review</label>
+                                    <textarea class="form-control" id="addNotes" name="notes" rows="3"></textarea>
                                 </div>
 
                             </div>
@@ -103,6 +94,7 @@
                     <!-- Modal Footer -->
                     <div class="modal-footer" style="border-top: 2px solid #ddd;">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <!-- UPDATE: Type submit agar form terkirim -->
                         <button type="submit" class="btn" style="background-color: #0d6efd; color: white;">Save</button>
                     </div>
                 </form>
@@ -110,21 +102,17 @@
         </div>
     </div>
 
-    <!-- Script Javascript untuk Preview Gambar -->
     <script>
         function previewImageAdd(input) {
             const preview = document.getElementById('imgPreviewAdd');
             const placeholder = document.getElementById('placeholderAdd');
-            
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                     placeholder.style.display = 'none';
                 }
-                
                 reader.readAsDataURL(input.files[0]);
             } else {
                 preview.src = '#';

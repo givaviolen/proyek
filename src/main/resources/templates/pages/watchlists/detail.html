@@ -24,11 +24,17 @@
               <span th:if="${watchList.type == 'Movie'}" class="badge bg-primary fs-6 ms-2">Movie</span>
               <span th:if="${watchList.type == 'Series'}" class="badge bg-info fs-6 ms-2">Series</span>
               
-              <!-- Badge Status -->
-              <span th:if="${watchList.isWatched}" class="badge bg-success fs-6 ms-1">
+              <!-- PERBAIKAN: Badge Status (Menggunakan String 'status', bukan 'isWatched') -->
+              <!-- 1. Watched -->
+              <span th:if="${watchList.status == 'Watched'}" class="badge bg-success fs-6 ms-1">
                 <i class="bi bi-check-circle-fill"></i> Watched
               </span>
-              <span th:unless="${watchList.isWatched}" class="badge bg-secondary fs-6 ms-1">
+              <!-- 2. Watching (Baru) -->
+              <span th:if="${watchList.status == 'Watching'}" class="badge bg-warning text-dark fs-6 ms-1">
+                <i class="bi bi-play-circle-fill"></i> Watching
+              </span>
+              <!-- 3. Plan to Watch -->
+              <span th:if="${watchList.status == 'Plan to Watch' or watchList.status == null}" class="badge bg-secondary fs-6 ms-1">
                 <i class="bi bi-hourglass-split"></i> Plan
               </span>
             </h3>
@@ -104,20 +110,30 @@
                                style="white-space: pre-wrap;"></p>
                           </td>
                         </tr>
+                        
+                        <!-- PERBAIKAN: Tombol Ganti Status (Cycle Status) -->
                         <tr>
-                            <th class="text-muted">Status Tonton</th>
+                            <th class="text-muted">Aksi Status</th>
                             <td>
+                                <!-- Form ini mengarah ke endpoint toggle/cycle status -->
                                 <form th:action="@{/watchlists/toggle-status}" method="post" class="d-inline">
                                     <input type="hidden" name="id" th:value="${watchList.id}">
-                                    <button type="submit" 
-                                            class="btn btn-sm" 
-                                            th:classappend="${watchList.isWatched} ? 'btn-outline-secondary' : 'btn-outline-success'">
-                                        <i class="bi" th:classappend="${watchList.isWatched} ? 'bi-x-circle' : 'bi-check-circle'"></i>
-                                        <span th:text="${watchList.isWatched} ? 'Tandai Belum Ditonton' : 'Tandai Sudah Ditonton'"></span>
+                                    
+                                    <!-- Logika Tombol Berdasarkan Status Saat Ini -->
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                        <!-- Menampilkan teks berdasarkan status saat ini -->
+                                        <span th:if="${watchList.status == 'Plan to Watch'}">Mulai Menonton (Set Watching)</span>
+                                        <span th:if="${watchList.status == 'Watching'}">Selesai Menonton (Set Watched)</span>
+                                        <span th:if="${watchList.status == 'Watched'}">Tonton Ulang (Set Plan)</span>
+                                        <!-- Default Fallback -->
+                                        <span th:if="${watchList.status == null}">Ubah Status</span>
                                     </button>
                                 </form>
+                                <div class="form-text text-muted mt-1"><small>Klik untuk mengubah status ke tahap berikutnya.</small></div>
                             </td>
                         </tr>
+
                         <tr>
                           <th class="text-muted"><small>Ditambahkan</small></th>
                           <td><small th:text="${#temporals.format(watchList.createdAt, 'd MMM yyyy HH:mm')}"></small></td>
@@ -138,7 +154,7 @@
     <!-- Scripts -->
     <script layout:fragment="others-js">
       document.addEventListener("DOMContentLoaded", function () {
-        /* Cek apakah modal upload perlu dibuka otomatis (misal setelah error validasi) */
+        /* Cek apakah modal upload perlu dibuka otomatis */
         var editCoverWatchListModalOpen = "[[${editCoverWatchListModalOpen}]]" === "true";
         if (editCoverWatchListModalOpen) {
           var uploadModal = new bootstrap.Modal(

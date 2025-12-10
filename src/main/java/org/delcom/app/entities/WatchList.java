@@ -1,7 +1,6 @@
 package org.delcom.app.entities;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,28 +17,29 @@ public class WatchList {
     private UUID userId;
 
     @Column(name = "title", nullable = false)
-    private String title; // Judul film/series
+    private String title;
 
     @Column(name = "type", nullable = false)
-    private String type; // "Movie" atau "Series"
+    private String type; // Movie / Series
 
     @Column(name = "genre", nullable = false)
-    private String genre; // Genre (Action, Drama, Comedy, Horror, dll)
+    private String genre;
 
     @Column(name = "rating", nullable = false)
-    private Integer rating; // Rating 1-10
+    private Integer rating;
 
     @Column(name = "release_year", nullable = false)
-    private Integer releaseYear; // Tahun rilis
+    private Integer releaseYear;
 
-    @Column(name = "is_watched", nullable = false)
-    private Boolean isWatched; // Sudah ditonton atau belum
+    // --- PERUBAHAN UTAMA ---
+    @Column(name = "status", nullable = false)
+    private String status; // Values: "Watched", "Watching", "Plan to Watch"
 
     @Column(name = "notes", nullable = true, columnDefinition = "TEXT")
-    private String notes; // Catatan pribadi
+    private String notes;
 
     @Column(name = "cover", nullable = true)
-    private String cover; // Nama file gambar poster
+    private String cover;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -47,112 +47,56 @@ public class WatchList {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    // Constructor
     public WatchList() {
     }
 
     public WatchList(UUID userId, String title, String type, String genre, Integer rating, 
-                     Integer releaseYear, Boolean isWatched, String notes) {
+                     Integer releaseYear, String status, String notes) {
         this.userId = userId;
         this.title = title;
         this.type = type;
         this.genre = genre;
         this.rating = rating;
         this.releaseYear = releaseYear;
-        this.isWatched = isWatched;
+        this.status = status;
         this.notes = notes;
     }
 
     // Getter & Setter
-    public UUID getId() {
-        return id;
-    }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+    public UUID getUserId() { return userId; }
+    public void setUserId(UUID userId) { this.userId = userId; }
 
-    public UUID getUserId() {
-        return userId;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public Integer getRating() { return rating; }
+    public void setRating(Integer rating) { this.rating = rating; }
 
-    public String getType() {
-        return type;
-    }
+    public Integer getReleaseYear() { return releaseYear; }
+    public void setReleaseYear(Integer releaseYear) { this.releaseYear = releaseYear; }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    // --- GETTER SETTER BARU UNTUK STATUS ---
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public String getGenre() {
-        return genre;
-    }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
+    public String getCover() { return cover; }
+    public void setCover(String cover) { this.cover = cover; }
 
-    public Integer getRating() {
-        return rating;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public Integer getReleaseYear() {
-        return releaseYear;
-    }
-
-    public void setReleaseYear(Integer releaseYear) {
-        this.releaseYear = releaseYear;
-    }
-
-    public Boolean getIsWatched() {
-        return isWatched;
-    }
-
-    public void setIsWatched(Boolean isWatched) {
-        this.isWatched = isWatched;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    // ======= @PrePersist & @PreUpdate =======
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -163,5 +107,4 @@ public class WatchList {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
 }

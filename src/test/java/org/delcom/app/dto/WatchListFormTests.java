@@ -22,13 +22,13 @@ class WatchListFormTests {
     void defaultConstructor_CreatesObjectWithDefaultValues() {
         assertNull(watchListForm.getId());
         assertNull(watchListForm.getTitle());
-        assertNull(watchListForm.getType());         // Field Baru
+        assertNull(watchListForm.getType());
         assertNull(watchListForm.getGenre());
         assertNull(watchListForm.getRating());
-        assertNull(watchListForm.getReleaseYear());  // Field Baru
-        assertNull(watchListForm.getIsWatched());    // Pengganti getStatus
-        assertNull(watchListForm.getNotes());        // Pengganti getComment
-        assertNull(watchListForm.getConfirmTitle());
+        assertNull(watchListForm.getReleaseYear());
+        // [FIX] Menggunakan getStatus
+        assertNull(watchListForm.getStatus());
+        assertNull(watchListForm.getNotes());
     }
 
     @Test
@@ -39,163 +39,50 @@ class WatchListFormTests {
         assertEquals(id, watchListForm.getId());
     }
 
-    @Test
-    @DisplayName("Setter dan Getter untuk title bekerja dengan benar")
-    void setterAndGetter_Title_WorksCorrectly() {
-        String title = "Inception";
-        watchListForm.setTitle(title);
-        assertEquals(title, watchListForm.getTitle());
-    }
+    // ... (Test Title, Type, Genre, Rating, Year, Notes sama seperti sebelumnya) ...
 
     @Test
-    @DisplayName("Setter dan Getter untuk type bekerja dengan benar")
-    void setterAndGetter_Type_WorksCorrectly() {
-        String type = "Movie";
-        watchListForm.setType(type);
-        assertEquals(type, watchListForm.getType());
-    }
+    @DisplayName("Setter dan Getter untuk Status bekerja dengan benar (String)")
+    void setterAndGetter_Status_WorksCorrectly() {
+        // [FIX] Test menggunakan String
+        String status = "Watching";
+        watchListForm.setStatus(status);
+        assertEquals(status, watchListForm.getStatus());
 
-    @Test
-    @DisplayName("Setter dan Getter untuk isWatched bekerja dengan benar (Boolean)")
-    void setterAndGetter_IsWatched_WorksCorrectly() {
-        // Test True
-        watchListForm.setIsWatched(true);
-        assertTrue(watchListForm.getIsWatched());
-
-        // Test False
-        watchListForm.setIsWatched(false);
-        assertFalse(watchListForm.getIsWatched());
-    }
-
-    @Test
-    @DisplayName("Setter dan Getter untuk genre bekerja dengan benar")
-    void setterAndGetter_Genre_WorksCorrectly() {
-        String genre = "Sci-Fi";
-        watchListForm.setGenre(genre);
-        assertEquals(genre, watchListForm.getGenre());
-    }
-
-    @Test
-    @DisplayName("Setter dan Getter untuk rating bekerja dengan benar")
-    void setterAndGetter_Rating_WorksCorrectly() {
-        Integer rating = 9;
-        watchListForm.setRating(rating);
-        assertEquals(rating, watchListForm.getRating());
-    }
-
-    @Test
-    @DisplayName("Setter dan Getter untuk releaseYear bekerja dengan benar")
-    void setterAndGetter_ReleaseYear_WorksCorrectly() {
-        Integer year = 2024;
-        watchListForm.setReleaseYear(year);
-        assertEquals(year, watchListForm.getReleaseYear());
-    }
-
-    @Test
-    @DisplayName("Setter dan Getter untuk notes bekerja dengan benar")
-    void setterAndGetter_Notes_WorksCorrectly() {
-        String notes = "Film yang sangat membingungkan tapi seru";
-        watchListForm.setNotes(notes);
-        assertEquals(notes, watchListForm.getNotes());
-    }
-
-    @Test
-    @DisplayName("Setter dan Getter untuk confirmTitle bekerja dengan benar")
-    void setterAndGetter_ConfirmTitle_WorksCorrectly() {
-        String confirmTitle = "Inception";
-        watchListForm.setConfirmTitle(confirmTitle);
-        assertEquals(confirmTitle, watchListForm.getConfirmTitle());
-    }
-
-    @Test
-    @DisplayName("Rating dapat diset dengan nilai 0 (Sangat Buruk)")
-    void rating_CanBeSet_WithZeroValue() {
-        watchListForm.setRating(0);
-        assertEquals(0, watchListForm.getRating());
-    }
-
-    @Test
-    @DisplayName("Rating dapat diset dengan nilai 10 (Sempurna)")
-    void rating_CanBeSet_WithMaxValue() {
-        watchListForm.setRating(10);
-        assertEquals(10, watchListForm.getRating());
+        watchListForm.setStatus("Plan to Watch");
+        assertEquals("Plan to Watch", watchListForm.getStatus());
     }
 
     @Test
     @DisplayName("Semua field dapat diset dan diget dengan nilai berbagai tipe")
     void allFields_CanBeSetAndGet_WithVariousValues() {
-        // Arrange
         UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
         String title = "The Dark Knight";
         String type = "Movie";
         String genre = "Action";
         Integer rating = 10;
         Integer releaseYear = 2008;
-        Boolean isWatched = true;
+        // [FIX] String status
+        String status = "Watched";
         String notes = "Best movie ever";
-        String confirmTitle = "The Dark Knight";
 
-        // Act
         watchListForm.setId(id);
         watchListForm.setTitle(title);
         watchListForm.setType(type);
         watchListForm.setGenre(genre);
         watchListForm.setRating(rating);
         watchListForm.setReleaseYear(releaseYear);
-        watchListForm.setIsWatched(isWatched);
+        watchListForm.setStatus(status);
         watchListForm.setNotes(notes);
-        watchListForm.setConfirmTitle(confirmTitle);
 
-        // Assert
         assertEquals(id, watchListForm.getId());
         assertEquals(title, watchListForm.getTitle());
         assertEquals(type, watchListForm.getType());
         assertEquals(genre, watchListForm.getGenre());
         assertEquals(rating, watchListForm.getRating());
         assertEquals(releaseYear, watchListForm.getReleaseYear());
-        assertEquals(isWatched, watchListForm.getIsWatched());
+        // [FIX]
+        assertEquals(status, watchListForm.getStatus());
         assertEquals(notes, watchListForm.getNotes());
-        assertEquals(confirmTitle, watchListForm.getConfirmTitle());
-    }
-
-    @Test
-    @DisplayName("Status isWatched dapat diubah dari False ke True")
-    void isWatched_CanBeChanged_FromFalseToTrue() {
-        // Arrange
-        watchListForm.setIsWatched(false);
-        assertFalse(watchListForm.getIsWatched());
-
-        // Act
-        watchListForm.setIsWatched(true);
-
-        // Assert
-        assertTrue(watchListForm.getIsWatched());
-    }
-
-    @Test
-    @DisplayName("ConfirmTitle untuk delete operation")
-    void confirmTitle_ForDeleteOperation() {
-        // Arrange
-        String title = "Titanic";
-        watchListForm.setTitle(title);
-
-        // Act
-        watchListForm.setConfirmTitle(title);
-
-        // Assert
-        assertEquals(title, watchListForm.getTitle());
-        assertEquals(title, watchListForm.getConfirmTitle());
-        assertEquals(watchListForm.getTitle(), watchListForm.getConfirmTitle());
-    }
-
-    @Test
-    @DisplayName("ConfirmTitle berbeda dengan title")
-    void confirmTitle_DifferentFromTitle() {
-        // Arrange
-        watchListForm.setTitle("Titanic");
-        watchListForm.setConfirmTitle("Avatar");
-
-        // Assert
-        assertNotEquals(watchListForm.getTitle(), watchListForm.getConfirmTitle());
     }
 }

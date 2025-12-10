@@ -55,13 +55,21 @@ public class WatchListHomeView {
                 .filter(w -> "Series".equals(w.getType()))
                 .count();
 
+        // FIX: Menggunakan equals String status
         long totalWatched = watchLists.stream()
-                .filter(WatchList::getIsWatched)
+                .filter(w -> "Watched".equals(w.getStatus()))
                 .count();
 
-        long totalUnwatched = watchLists.stream()
-                .filter(w -> !w.getIsWatched())
+        // FIX: Menghitung status lainnya
+        long totalWatching = watchLists.stream()
+                .filter(w -> "Watching".equals(w.getStatus()))
                 .count();
+        
+        long totalPlan = watchLists.stream()
+                .filter(w -> "Plan to Watch".equals(w.getStatus()) || w.getStatus() == null)
+                .count();
+        
+        long totalUnwatched = totalWatching + totalPlan; // Gabungan untuk backward compatibility tampilan
 
         // Hitung rata-rata rating
         double averageRating = watchLists.stream()
@@ -85,9 +93,12 @@ public class WatchListHomeView {
         model.addAttribute("movieCount", totalMovies);
         model.addAttribute("seriesCount", totalSeries);
 
-        // Data untuk chart - Watched status
+        // FIX: Data untuk chart - Watched Status (Kirim 3 data)
         model.addAttribute("watchedCount", totalWatched);
-        model.addAttribute("unwatchedCount", totalUnwatched);
+        model.addAttribute("watchingCount", totalWatching);
+        model.addAttribute("planToWatchCount", totalPlan);
+        // Fallback variable jika HTML masih pakai unwatchedCount
+        model.addAttribute("unwatchedCount", totalPlan); 
 
         // Form untuk modal
         model.addAttribute("watchListForm", new WatchListForm());

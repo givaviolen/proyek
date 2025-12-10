@@ -9,486 +9,102 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WatchList - Home</title>
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <!-- CHART.JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
-        /* ================= COLOR PALETTE ================= */
-        :root {
+        /* DEFINISI WARNA ROOT */
+        :root { 
             --bg-body: #f5f3e8; 
-            --bg-input: #ebe9d9;
-            --color-blue-dark: #1e3a52; 
-            --color-gold: #b8935c;      
-            --color-gold-light: #c9b17a; 
-            --color-beige: #d4c5a0;     
-            --color-black: #1a1a1a;     
+            --bg-input: #ebe9d9; 
+            --color-blue-dark: #1e3a52; /* Watched */
+            --color-gold: #b8935c;      /* Watching */
+            --color-beige: #d4c5a0;     /* Plan to Watch */
+            --color-black: #1a1a1a; 
         }
-
-        /* ================= STYLE UTAMA ================= */
-        body {
-            background-color: var(--bg-body); 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--color-black);
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
-
-        /* ================= HEADER CUSTOM ================= */
-        .custom-header-bar {
-            width: 100vw;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 50px;
-            position: relative;
-            margin-left: calc(-50vw + 50%);
-            margin-right: calc(-50vw + 50%);
-            margin-bottom: 30px;
-            
-            background: linear-gradient(
-                120deg, 
-                var(--bg-body) 0%, 
-                var(--bg-body) 60%,
-                var(--color-gold) 60%,
-                var(--color-gold) 61.5%,
-                var(--color-blue-dark) 61.5%,
-                var(--color-blue-dark) 100%
-            );
-            border-bottom: 2px solid var(--color-gold);
-        }
-
-        /* LOGO */
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 10;
-        }
-
-        .brand-logo-img { 
-            height: 50px; 
-            width: auto; 
-        }
-
-        .brand-text {
-            font-size: 36px;
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -0.5px;
-        }
-
+        
+        body { background-color: var(--bg-body); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--color-black); min-height: 100vh; overflow-x: hidden; }
+        .custom-header-bar { width: 100vw; height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); margin-bottom: 30px; background: linear-gradient(120deg, var(--bg-body) 0%, var(--bg-body) 60%, var(--color-gold) 60%, var(--color-gold) 61.5%, var(--color-blue-dark) 61.5%, var(--color-blue-dark) 100%); border-bottom: 2px solid var(--color-gold); }
+        .brand-container { display: flex; align-items: center; gap: 12px; z-index: 10; }
+        .brand-logo-img { height: 50px; width: auto; }
+        .brand-text { font-size: 36px; font-weight: 700; letter-spacing: -0.5px; }
         .text-watch { color: var(--color-blue-dark); }
         .text-list { color: var(--color-gold); }
-
-        /* HEADER RIGHT */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            z-index: 10;
-        }
-
-        .user-greeting {
-            color: #ffffff;
-            font-size: 20px;
-            font-weight: 400;
-        }
-
-        .btn-logout {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            padding: 6px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .btn-logout:hover {
-            background-color: var(--color-gold);
-            border-color: var(--color-gold);
-            color: var(--color-black);
-            transform: translateY(-1px);
-        }
-
-        /* ================= STATS SECTION (PIE CHART) ================= */
-        .stats-section {
-            padding: 0 50px;
-            margin-bottom: 30px;
-        }
-
-        .stats-card {
-            background-color: var(--bg-body);
-            border: 2px solid var(--color-gold);
-            border-radius: 12px;
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center; /* Center content */
-            gap: 40px;
-            box-shadow: 4px 4px 0px rgba(184, 147, 92, 0.3);
-            max-width: 600px; /* Batasi lebar agar tidak terlalu panjang */
-            margin: 0 auto;   /* Center card */
-        }
-
-        .chart-container {
-            width: 180px; /* Ukuran chart pas */
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .stats-text {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .stats-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--color-blue-dark);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 2px solid var(--color-gold);
-            padding-bottom: 5px;
-            display: inline-block;
-        }
-
-        .legend-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 15px;
-            color: #333;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .dot {
-            width: 15px;
-            height: 15px;
-            border-radius: 4px; /* Kotak rounded */
-            display: inline-block;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        /* ================= ACTION BAR ================= */
-        .action-bar {
-            padding: 0 50px;
-            margin-bottom: 30px;
-        }
-
-        .custom-input {
-            background-color: var(--bg-input);
-            border: 2px solid var(--color-gold);
-            border-radius: 8px;
-            padding: 10px 15px 10px 45px;
-            width: 100%;
-            color: #333;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s;
-        }
+        .header-right { display: flex; align-items: center; gap: 20px; z-index: 10; }
+        .user-greeting { color: #ffffff; font-size: 20px; font-weight: 400; }
+        .btn-logout { display: flex; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 6px 15px; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; background-color: rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
+        .btn-logout:hover { background-color: var(--color-gold); border-color: var(--color-gold); color: var(--color-black); }
         
-        .custom-input:focus {
-            background-color: #fff;
-            box-shadow: 0 0 5px rgba(184, 147, 92, 0.4);
-            border-color: var(--color-blue-dark);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            font-size: 16px;
-            z-index: 5;
-        }
-
-        .filter-select {
-            padding-left: 15px !important;
-            appearance: auto;
-            cursor: pointer;
-        }
-
-        .btn-add-film {
-            background-color: var(--color-blue-dark);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 24px;
-            font-weight: 600;
-            font-size: 14px;
-            width: 100%;
-            transition: all 0.3s;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-
-        .btn-add-film:hover {
-            background-color: #2a4f6e;
-            color: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.2);
-        }
-
-        /* ================= MOVIE CARDS ================= */
-        .card-container {
-            padding: 0 50px 60px 50px;
-        }
-
-        .movie-card {
-            background-color: var(--bg-body);
-            border: 3px solid #000; 
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
-            height: 100%;
-            transition: transform 0.3s;
-            display: flex;
-        }
-
-        .movie-card:hover { 
-            transform: translateY(-3px);
-            box-shadow: 8px 8px 0px rgba(0,0,0,0.35);
-        }
-
-        .movie-poster-container {
-            width: 38%;
-            position: relative;
-            border-right: 3px solid #000;
-            background-color: #000;
-            overflow: hidden;
-        }
-
-        .movie-poster {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .movie-details-container {
-            width: 62%;
-            padding: 16px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background-color: var(--bg-body);
-        }
-
-        .movie-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #000;
-            margin-bottom: 8px;
-            line-height: 1.2;
-            padding-right: 40px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .movie-meta {
-            font-size: 13px;
-            color: #2a2a2a;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .star-rating {
-            color: var(--color-gold);
-            margin: 8px 0 10px 0;
-            font-size: 14px;
-        }
-
-        .edit-icon-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            color: var(--color-gold);
-            border: 2px solid var(--color-gold);
-            border-radius: 6px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-        }
-
-        .edit-icon-btn:hover {
-            background-color: var(--color-gold);
-            color: white;
-            border-color: var(--color-gold);
-        }
-
-        .status-badge {
-            display: block;
-            width: 100%;
-            padding: 8px 16px;
-            border-radius: 6px;
-            color: white;
-            font-weight: 600;
-            font-size: 13px;
-            border: none;
-            text-align: left;
-            position: relative;
-            cursor: default;
-        }
+        /* STATS SECTION */
+        .stats-section { padding: 0 50px; margin-bottom: 30px; }
+        .stats-card { background-color: var(--bg-body); border: 2px solid var(--color-gold); border-radius: 12px; padding: 15px 25px; display: flex; align-items: center; justify-content: center; gap: 40px; box-shadow: 4px 4px 0px rgba(184, 147, 92, 0.3); max-width: 600px; margin: 0 auto; }
+        .chart-container { width: 180px; height: 180px; display: flex; justify-content: center; align-items: center; }
+        .stats-text { display: flex; flex-direction: column; justify-content: center; }
+        .stats-title { font-size: 20px; font-weight: 800; color: var(--color-blue-dark); margin-bottom: 15px; border-bottom: 2px solid var(--color-gold); display: inline-block; }
+        .legend-container { display: flex; flex-direction: column; gap: 8px; font-size: 15px; color: #333; }
+        .legend-item { display: flex; align-items: center; gap: 10px; }
+        .dot { width: 15px; height: 15px; border-radius: 4px; display: inline-block; border: 1px solid rgba(0,0,0,0.1); }
         
-        .status-badge::after {
-            content: "▼";
-            font-size: 9px;
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .bg-watched { 
-            background-color: var(--color-blue-dark);
-            color: white;
-        }
+        /* ACTION BAR */
+        .action-bar { padding: 0 50px; margin-bottom: 30px; }
+        .custom-input { background-color: var(--bg-input); border: 2px solid var(--color-gold); border-radius: 8px; padding: 10px 15px 10px 45px; width: 100%; color: #333; font-size: 14px; outline: none; }
+        .custom-input:focus { background-color: #fff; border-color: var(--color-blue-dark); }
+        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #666; font-size: 16px; z-index: 5; }
+        .btn-add-film { background-color: var(--color-blue-dark); color: white; border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600; font-size: 14px; width: 100%; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+        .btn-add-film:hover { background-color: #2a4f6e; transform: translateY(-2px); }
         
-        .bg-watching { 
-            background-color: var(--color-gold-light);
-            color: #2a2a2a;
-        }
+        /* CARD STYLES */
+        .card-container { padding: 0 50px 60px 50px; }
+        .movie-card { background-color: var(--bg-body); border: 3px solid #000; border-radius: 12px; overflow: hidden; box-shadow: 6px 6px 0px rgba(0,0,0,0.3); height: 100%; transition: transform 0.3s; display: flex; }
+        .movie-card:hover { transform: translateY(-3px); box-shadow: 8px 8px 0px rgba(0,0,0,0.35); }
+        .movie-poster-container { width: 38%; position: relative; border-right: 3px solid #000; background-color: #000; overflow: hidden; }
+        .movie-poster { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .movie-details-container { width: 62%; padding: 16px 20px; display: flex; flex-direction: column; justify-content: space-between; background-color: var(--bg-body); }
+        .movie-title { font-size: 20px; font-weight: 700; color: #000; margin-bottom: 8px; line-height: 1.2; -webkit-line-clamp: 2; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; }
+        .movie-meta { font-size: 13px; color: #2a2a2a; margin-bottom: 4px; font-weight: 500; }
+        .star-rating { color: var(--color-gold); margin: 8px 0 10px 0; font-size: 14px; }
         
-        .bg-not-watched { 
-            background-color: var(--color-beige); 
-            color: #2a2a2a;
-        }
+        /* BUTTONS EDIT/DELETE */
+        .edit-icon-btn { position: absolute; top: 12px; right: 12px; color: var(--color-gold); border: 2px solid var(--color-gold); border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.8); text-decoration: none; z-index: 5; }
+        .edit-icon-btn:hover { background-color: var(--color-gold); color: white; }
+        .delete-icon-btn { position: absolute; top: 12px; right: 50px; color: #dc3545; border: 2px solid #dc3545; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.8); text-decoration: none; z-index: 5; }
+        .delete-icon-btn:hover { background-color: #dc3545; color: white; }
 
-        .empty-message {
-            color: #6c757d;
-            font-weight: 500;
-            font-size: 22px;
-            margin-top: 50px;
-        }
-
-        @media (max-width: 768px) {
-            .custom-header-bar {
-                padding: 0 20px;
-                height: 80px;
-                background: linear-gradient(
-                    110deg, 
-                    var(--bg-body) 0%, 
-                    var(--bg-body) 50%,
-                    var(--color-gold) 50%,
-                    var(--color-gold) 51.5%,
-                    var(--color-blue-dark) 51.5%,
-                    var(--color-blue-dark) 100%
-                );
-            }
-            .action-bar, .card-container, .stats-section {
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-            .stats-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-                max-width: 100%;
-            }
-            .stats-text {
-                padding-left: 0;
-            }
-            .legend-container {
-                justify-content: center;
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            .brand-text { font-size: 24px; }
-            .user-greeting { font-size: 14px; margin-right: 0; }
-            .header-right { gap: 10px; }
-            .brand-logo-img { height: 40px; }
-        }
-
-        @media (max-width: 576px) {
-            .custom-header-bar { height: 70px; padding: 0 15px; }
-            .brand-text { font-size: 20px; }
-            .user-greeting { display: none; }
-            .brand-logo-img { height: 35px; }
-        }
+        /* STATUS BADGES */
+        .status-badge { display: block; width: 100%; padding: 8px 16px; border-radius: 6px; color: white; font-weight: 600; font-size: 13px; border: none; text-align: left; cursor: default; }
+        
+        /* WARNA STATUS UPDATED */
+        .bg-watched { background-color: var(--color-blue-dark); color: white; } /* Watched */
+        .bg-watching { background-color: var(--color-gold); color: white; }      /* Watching */
+        .bg-plan { background-color: var(--color-beige); color: #2a2a2a; }       /* Plan to Watch */
+        
+        .empty-message { color: #6c757d; font-weight: 500; font-size: 22px; margin-top: 50px; }
     </style>
   </head>
   <body>
     <div layout:fragment="content">
-        
         <!-- HEADER -->
         <div class="custom-header-bar">
-            <!-- LOGO KIRI -->
             <div class="brand-container">
                 <img th:src="@{/assets/images/logo.png}" alt="Logo" class="brand-logo-img">
-                <div class="brand-text">
-                    <span class="text-watch">Watch</span><span class="text-list">List</span>
-                </div>
+                <div class="brand-text"><span class="text-watch">Watch</span><span class="text-list">List</span></div>
             </div>
-            
-            <!-- USER & LOGOUT KANAN -->
             <div class="header-right">
-                <div class="user-greeting">
-                    Hello, <span th:text="${auth.name}">Username</span>!
-                </div>
-                <a th:href="@{/auth/logout}" class="btn-logout">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
+                <div class="user-greeting">Hello, <span th:text="${auth.name}">Username</span>!</div>
+                <a th:href="@{/auth/logout}" class="btn-logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
             </div>
         </div>
 
-        <!-- NEW: STATS DASHBOARD (PIE CHART) -->
+        <!-- STATS SECTION -->
         <div class="stats-section">
             <div class="stats-card">
-                <!-- Bagian Kiri: Chart -->
-                <div class="chart-container">
-                    <canvas id="watchStatusChart"></canvas>
-                </div>
-
-                <!-- Bagian Kanan: Informasi / Legend -->
+                <div class="chart-container"><canvas id="watchStatusChart"></canvas></div>
                 <div class="stats-text">
-                    <div class="stats-title">
-                        Watch Statistics
-                    </div>
-                    
+                    <div class="stats-title">Watch Statistics</div>
+                    <!-- Legend Sinkron dengan Chart 3 Status -->
                     <div class="legend-container">
-                        <div class="legend-item">
-                            <span class="dot" style="background-color: #1e3a52;"></span>
-                            Watched <strong class="ms-1" th:text="${countWatched}">0</strong>
-                        </div>
-                        <div class="legend-item">
-                            <span class="dot" style="background-color: #c9b17a;"></span>
-                            Watching <strong class="ms-1" th:text="${countWatching}">0</strong>
-                        </div>
-                        <div class="legend-item">
-                            <span class="dot" style="background-color: #e1d5b9;"></span>
-                            Plan to Watch <strong class="ms-1" th:text="${countPlanToWatch}">0</strong>
-                        </div>
+                        <div class="legend-item"><span class="dot" style="background-color: var(--color-blue-dark);"></span> Watched <strong class="ms-1" th:text="${watchedCount}">0</strong></div>
+                        <div class="legend-item"><span class="dot" style="background-color: var(--color-gold);"></span> Watching <strong class="ms-1" th:text="${watchingCount}">0</strong></div>
+                        <div class="legend-item"><span class="dot" style="background-color: var(--color-beige);"></span> Plan to Watch <strong class="ms-1" th:text="${planToWatchCount}">0</strong></div>
                     </div>
                 </div>
             </div>
@@ -498,8 +114,10 @@
         <div class="action-bar">
             <div class="row align-items-center g-3">
                 <div class="col-md-4 position-relative">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" class="custom-input" placeholder="Search">
+                    <form action="/watchlists" method="get">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" name="search" class="custom-input" placeholder="Search" th:value="${param.search}">
+                    </form>
                 </div>
                 <div class="col-md-3">
                     <select class="custom-input filter-select">
@@ -517,66 +135,78 @@
             </div>
         </div>
 
-        <!-- CONTENT -->
+        <!-- CONTENT CARD LIST -->
         <div class="card-container">
             <div class="row g-4">
-                
-                <!-- LOOP -->
                 <div class="col-md-6 col-lg-4" th:each="item : ${watchLists}">
                     <div class="movie-card">
+                        <!-- Poster -->
                         <div class="movie-poster-container">
                             <img th:if="${item.cover}" th:src="@{'/watchlists/cover/' + ${item.cover}}" class="movie-poster" alt="Poster">
-                            <div th:unless="${item.cover}" class="h-100 w-100 bg-secondary d-flex align-items-center justify-content-center text-white">
-                                <i class="bi bi-film" style="font-size: 2rem;"></i>
-                            </div>
+                            <div th:unless="${item.cover}" class="h-100 w-100 bg-secondary d-flex align-items-center justify-content-center text-white"><i class="bi bi-film" style="font-size: 2rem;"></i></div>
                         </div>
+                        
+                        <!-- Details -->
                         <div class="movie-details-container position-relative">
                             
-                            <!-- EDIT BUTTON -->
+                            <!-- DELETE BUTTON -->
                             <a href="#" 
-                               th:attr="onclick=|prepareEditWatchList('${item.id}', '${item.title}', '${item.type}', '${item.genre}', ${item.rating}, ${item.releaseYear}, '${item.status}', `${item.notes}`, '${item.cover}')|"
-                               class="edit-icon-btn">
-                                <i class="bi bi-pencil-square"></i>
+                               th:attr="onclick=|prepareDeleteWatchList('${item.id}', '${item.title}')|" 
+                               class="delete-icon-btn"
+                               title="Delete">
+                               <i class="bi bi-trash"></i>
                             </a>
 
+                            <!-- EDIT BUTTON -->
+                            <!-- UPDATED: Mengirim 'item.status' (String) ke Javascript, bukan boolean isWatched -->
+                            <a href="#" 
+                               th:attr="onclick=|prepareEditWatchList('${item.id}', '${item.title}', '${item.type}', '${item.genre}', ${item.rating}, ${item.releaseYear}, '${item.status}', `${item.notes}`, '${item.cover}')|" 
+                               class="edit-icon-btn"
+                               title="Edit">
+                               <i class="bi bi-pencil-square"></i>
+                            </a>
+                            
                             <div>
                                 <h5 class="movie-title" th:text="${item.title}">Title</h5>
                                 <div class="movie-meta">Year: <span th:text="${item.releaseYear}">2023</span></div>
-                                <div class="movie-meta">Duration: <span th:text="${item.type == 'Movie' ? '3h 0m' : 'Series'}">3h 0m</span></div>
+                                <div class="movie-meta">Type: <span th:text="${item.type}">Movie</span></div>
                                 <div class="movie-meta">Genre: <span th:text="${item.genre}">Genre</span></div>
-                                <div class="star-rating">
-                                    Rating: 
-                                    <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, item.rating / 2)}"></i>
-                                    <i class="bi bi-star" th:each="i : ${#numbers.sequence((item.rating / 2) + 1, 5)}" th:if="${item.rating < 10}"></i>
-                                </div>
+                                <div class="star-rating">Rating: <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, item.rating / 2)}"></i><i class="bi bi-star" th:each="i : ${#numbers.sequence((item.rating / 2) + 1, 5)}" th:if="${item.rating < 10}"></i></div>
                             </div>
+                            
+                            <!-- STATUS BADGE LOGIC (UPDATED FOR 3 STATUSES) -->
                             <div class="mt-2">
-                                <!-- STATUS BUTTON -->
-                                <button class="status-badge" 
-                                        th:classappend="${item.status == 'Watched'} ? 'bg-watched' : (${item.status == 'Watching'} ? 'bg-watching' : 'bg-not-watched')">
-                                    Status: <span th:text="${item.status}">Plan to Watch</span>
+                                <button th:if="${item.status == 'Watched'}" class="status-badge bg-watched">
+                                    Status: Watched
+                                </button>
+                                <button th:if="${item.status == 'Watching'}" class="status-badge bg-watching">
+                                    Status: Watching
+                                </button>
+                                <button th:if="${item.status == 'Plan to Watch' or item.status == null}" class="status-badge bg-plan">
+                                    Status: Plan to Watch
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- EMPTY STATE -->
                 <div class="col-12 text-center" th:if="${#lists.isEmpty(watchLists)}">
                     <h3 class="empty-message">No movies added yet.</h3>
                 </div>
-
             </div>
         </div>
 
         <!-- Modals -->
-        <div th:replace="~{models/watchlists/add :: addWatchListModal}"></div>
-        <div th:replace="~{models/watchlists/edit :: editWatchListModal}"></div>
+        <div th:replace="~{models/WatchLists/add :: addWatchListModal}"></div>
+        <div th:replace="~{models/WatchLists/edit :: editWatchListModal}"></div>
+        <div th:replace="~{models/WatchLists/delete :: deleteWatchListModal}"></div>
     </div>
 
     <!-- SCRIPTS -->
     <th:block layout:fragment="others-js">
         <script th:inline="javascript">
+            
+            // --- FUNGSI EDIT WATCHLIST (UPDATED) ---
+            // Parameter 'status' sekarang menerima String ('Watched', 'Watching', 'Plan to Watch')
             function prepareEditWatchList(id, title, type, genre, rating, releaseYear, status, notes, cover) {
                 document.getElementById("editWatchListId").value = id;
                 document.getElementById("editWatchListTitle").value = title;
@@ -584,79 +214,70 @@
                 document.getElementById("editWatchListGenre").value = genre;
                 document.getElementById("editWatchListRating").value = rating;
                 document.getElementById("editWatchListReleaseYear").value = releaseYear;
-                document.getElementById("editWatchListStatus").value = status;
-                document.getElementById("editWatchListNotes").value = (notes === 'null' || notes === null) ? '' : notes;
+                
+                // Set Dropdown Status
+                let statusField = document.getElementById("editWatchListStatus");
+                if(statusField) {
+                    statusField.value = status; // Akan memilih sesuai value string
+                }
 
+                document.getElementById("editWatchListNotes").value = (notes === 'null' || notes === null) ? '' : notes;
+                
+                // Preview Gambar Logic
                 const imgPreview = document.getElementById("imgPreviewEdit");
                 const placeholder = document.getElementById("placeholderEdit");
+                if (cover && cover !== 'null' && cover !== '') { 
+                    imgPreview.src = '/watchlists/cover/' + cover; 
+                    imgPreview.style.display = 'block'; 
+                    placeholder.style.display = 'none'; 
+                } else { 
+                    imgPreview.src = '#'; 
+                    imgPreview.style.display = 'none'; 
+                    placeholder.style.display = 'block'; 
+                }
                 
-                if (cover && cover !== 'null' && cover !== '') {
-                    imgPreview.src = '/watchlists/cover/' + cover;
-                    imgPreview.style.display = 'block';
-                    placeholder.style.display = 'none';
-                } else {
-                    imgPreview.src = '#';
-                    imgPreview.style.display = 'none';
-                    placeholder.style.display = 'block';
-                }
-
-                if(document.getElementById("coverImageEdit")) {
-                    document.getElementById("coverImageEdit").value = "";
-                }
-
+                if(document.getElementById("coverImageEdit")) document.getElementById("coverImageEdit").value = "";
+                
                 var editModal = new bootstrap.Modal(document.getElementById("editWatchListModal"));
                 editModal.show();
             }
 
-            // --- CHART.JS CONFIGURATION ---
-            document.addEventListener("DOMContentLoaded", function() {
-                
-                // Gunakan format komentar Thymeleaf agar tidak error di VS Code
-                const countWatched = /*[[${countWatched != null ? countWatched : 0}]]*/ 0;
-                const countWatching = /*[[${countWatching != null ? countWatching : 0}]]*/ 0;
-                const countPlan = /*[[${countPlanToWatch != null ? countPlanToWatch : 0}]]*/ 0;
+            // --- FUNGSI DELETE ---
+            function prepareDeleteWatchList(id, title) {
+                document.getElementById("deleteWatchListId").value = id;
+                document.getElementById("deleteWatchListTitleDisplay").innerText = title;
+                var deleteModal = new bootstrap.Modal(document.getElementById("deleteWatchListModal"));
+                deleteModal.show();
+            }
 
+            // --- CHART LOGIC (UPDATED FOR 3 STATUSES) ---
+            document.addEventListener("DOMContentLoaded", function() {
+                // Pastikan Controller mengirim: watchedCount, watchingCount, planToWatchCount
+                const countWatched = /*[[${watchedCount != null ? watchedCount : 0}]]*/ 0;
+                const countWatching = /*[[${watchingCount != null ? watchingCount : 0}]]*/ 0;
+                const countPlan = /*[[${planToWatchCount != null ? planToWatchCount : 0}]]*/ 0;
+                
                 const total = countWatched + countWatching + countPlan;
                 
                 const ctx = document.getElementById('watchStatusChart').getContext('2d');
-                
                 new Chart(ctx, {
                     type: 'doughnut', 
                     data: {
                         labels: ['Watched', 'Watching', 'Plan to Watch'],
                         datasets: [{
+                            // Data: Watched, Watching, Plan
                             data: total > 0 ? [countWatched, countWatching, countPlan] : [0,0,1], 
-                            backgroundColor: [
-                                '#1e3a52', // Blue Dark (Watched)
-                                '#c9b17a', // Gold Light (Watching)
-                                '#d4c5a0'  // Beige (Plan)
-                            ],
-                            borderColor: '#fcfbf4', 
-                            borderWidth: 2,
+                            // Warna: Biru, Emas, Beige
+                            backgroundColor: ['#1e3a52', '#b8935c', '#d4c5a0'],
+                            borderColor: '#f5f3e8', 
+                            borderWidth: 2, 
                             hoverOffset: 4
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false 
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (total === 0) return 'No Data';
-                                        let value = context.raw;
-                                        return label + value;
-                                    }
-                                }
-                            }
-                        },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; if (label) { label += ': '; } if (total === 0) return 'No Data'; let value = context.raw; return label + value; } } } }, 
                         cutout: '65%' 
                     }
                 });
