@@ -2,17 +2,22 @@
 
 ## Logs
 
-### 04-11-2025
+### 6-12-2025
 
-- Memperbarui kebutuhan paket
+- Membuat sistem (backend) aplikasi
+- Membuat test jacoco
 
-### 29-10-2025
+### 9-12-2025
 
-- Melakukan inisialisasi proyek
+- Membuat UI pada aplikasi
 
-### Update Final P11
-- Menambahkan sistem cash flow
-- Menambahkan UI dari sistem cash flow
+### 11-12-2025
+
+- Memperbaiki fitur dan melengkapi fitur serta fungsinya
+
+## 12-12-2025
+
+- Melakukan submit/pengumpulan proyek
 
 ## Syntax
 
@@ -46,5 +51,3 @@ command-check: `./mvnw clean test jacoco:check`
 ## Purpose
 
 Proyek ini dibuat untuk tujuan **Pendidikan**.
-
-
