@@ -1,6 +1,9 @@
 package org.delcom.app.entities;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -114,4 +117,22 @@ class WatchListTest {
         // UpdatedAt harus berubah (waktu maju)
         assertTrue(newUpdatedAt.isAfter(updatedAt));
     }
+        @Test
+    @DisplayName("Test @PrePersist (onCreate) sets createdAt and updatedAt")
+    void testPrePersist() {
+        WatchList product = new WatchList();
+
+        assertNull(product.getCreatedAt());
+        assertNull(product.getUpdatedAt());
+
+        ReflectionTestUtils.invokeMethod(product, "onCreate");
+
+        assertNotNull(product.getCreatedAt());
+        assertNotNull(product.getUpdatedAt());
+        
+        // HAPUS BARIS INI: assertNotNull(product.getId());  <-- HAPUS INI
+        
+        assertEquals(product.getCreatedAt(), product.getUpdatedAt());
+    }
+
 }

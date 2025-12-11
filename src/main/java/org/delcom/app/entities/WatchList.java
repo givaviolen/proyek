@@ -99,10 +99,10 @@ public class WatchList {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
+    LocalDateTime now = LocalDateTime.now(); // Ambil waktu satu kali saja
+    this.createdAt = now;
+    this.updatedAt = now; // Gunakan variabel yang sama
+}
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
