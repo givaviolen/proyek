@@ -1,119 +1,41 @@
 <th:block th:fragment="editCoverWatchListModal">
-  <!-- Modal Edit Cover -->
-  <div class="modal fade" id="editCoverWatchListModal" tabindex="-1" aria-labelledby="editCoverWatchListModalLabel" aria-hidden="true">
+  <div class="modal fade" id="editCoverWatchListModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <!-- Style konsisten dengan Add/Delete Modal -->
       <div class="modal-content" style="background-color: #fcfbf4; border: 2px solid #000;">
-        
-        <!-- Header -->
         <div class="modal-header" style="border-bottom: 2px solid #ddd;">
-          <h5 class="modal-title fw-bold" id="editCoverWatchListModalLabel" style="color: #1a1a1a;">
-            Update Poster
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title fw-bold">Update Poster</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-
-        <form
-          th:action="@{/watchlists/edit-cover}"
-          method="post"
-          th:object="${coverWatchListForm}"
-          enctype="multipart/form-data"
-        >
+        <form th:action="@{/watchlists/edit-cover}" method="post" enctype="multipart/form-data" th:object="${coverWatchListForm}">
           <div class="modal-body">
-            <!-- Alert Error -->
-            <div
-              th:if="${error}"
-              class="alert alert-danger alert-dismissible fade show"
-              role="alert"
-            >
-              <span th:text="${error}"></span>
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-
-            <!-- Hidden ID -->
             <input type="hidden" th:field="*{id}" />
-
-            <div class="mb-3 d-flex flex-column align-items-center">
-              <label class="form-label fw-bold w-100">
-                Select New Poster
-                <span class="text-danger">*</span>
-              </label>
-
-              <!-- Area Preview Gambar (Konsisten dengan Add Modal) -->
-              <div class="mb-2" style="width: 100%; height: 300px; border: 2px dashed #c4a45e; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: #f0eee4;">
-                  <!-- Gambar Preview -->
-                  <img id="imgPreviewEditCover" src="#" alt="Preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-                  
-                  <!-- Placeholder -->
-                  <div id="placeholderEditCover" class="text-center text-muted">
-                      <i class="bi bi-cloud-upload fs-1"></i>
-                      <div style="font-size: 12px;">Choose a file to preview</div>
-                  </div>
-              </div>
-
-              <!-- Input File -->
-              <input
-                type="file"
-                class="form-control"
-                th:field="*{coverFile}"
-                id="editCoverWatchListFile"
-                accept="image/*"
-                onchange="previewImageEditCover(this)"
-              />
-              
-              <div class="d-flex justify-content-between w-100 mt-1">
-                <small class="text-muted" style="font-size: 11px;">Format: JPG, PNG, WEBP</small>
-                <small class="text-muted" style="font-size: 11px;">Max Size: 5MB</small>
-              </div>
-
-              <!-- Field Error Message -->
-              <div
-                class="text-danger mt-1"
-                th:if="${#fields.hasErrors('coverFile')}"
-                th:errors="*{coverFile}"
-              ></div>
+            <div class="mb-3 text-center">
+               <!-- Preview Area -->
+               <div class="mb-2 mx-auto" style="width: 200px; height: 300px; border: 2px dashed #c4a45e; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                  <img id="previewCover" src="#" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                  <span id="phCover" class="text-muted">New Poster</span>
+               </div>
+               <input type="file" class="form-control" th:field="*{coverFile}" accept="image/*" onchange="previewC(this)">
             </div>
           </div>
-
-          <!-- Footer -->
-          <div class="modal-footer" style="border-top: 2px solid #ddd;">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancel
-            </button>
-
-            <button type="submit" class="btn" style="background-color: #0d6efd; color: white;">
-              Upload
-            </button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn" style="background-color: #0d6efd; color: white;">Upload</button>
           </div>
         </form>
       </div>
     </div>
   </div>
-
-  <!-- Script Preview Image Khusus Edit Cover -->
   <script>
-      function previewImageEditCover(input) {
-          const preview = document.getElementById('imgPreviewEditCover');
-          const placeholder = document.getElementById('placeholderEditCover');
-          
-          if (input.files && input.files[0]) {
-              const reader = new FileReader();
-              
-              reader.onload = function(e) {
-                  preview.src = e.target.result;
-                  preview.style.display = 'block';
-                  placeholder.style.display = 'none';
+      function previewC(i){
+          if(i.files && i.files[0]){
+              var r = new FileReader();
+              r.onload = function(e){
+                  document.getElementById('previewCover').src=e.target.result;
+                  document.getElementById('previewCover').style.display='block';
+                  document.getElementById('phCover').style.display='none';
               }
-              
-              reader.readAsDataURL(input.files[0]);
-          } else {
-              preview.src = '#';
-              preview.style.display = 'none';
-              placeholder.style.display = 'block';
+              r.readAsDataURL(i.files[0]);
           }
       }
   </script>

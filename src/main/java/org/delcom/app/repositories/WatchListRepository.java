@@ -13,7 +13,13 @@ import java.util.UUID;
 @Repository
 public interface WatchListRepository extends JpaRepository<WatchList, UUID> {
 
-    List<WatchList> findByUserId(UUID userId);
+    // [PERBAIKAN UTAMA] 
+    // Ubah sorting menjadi CreatedAt Descending.
+    // Artinya: Data yang baru DIBUAT ada di paling atas. 
+    // Data yang DIEDIT tidak akan pindah posisi karena CreatedAt-nya tidak berubah.
+    List<WatchList> findAllByUserIdOrderByCreatedAtDesc(UUID userId);
+
+    // ... (Sisa method di bawah ini TETAP SAMA, tidak perlu diubah) ...
 
     Optional<WatchList> findByIdAndUserId(UUID id, UUID userId);
 
@@ -26,9 +32,11 @@ public interface WatchListRepository extends JpaRepository<WatchList, UUID> {
     @Query("SELECT w FROM WatchList w WHERE w.userId = :userId AND w.type = :type")
     List<WatchList> findByUserIdAndType(@Param("userId") UUID userId, @Param("type") String type);
 
-    // --- PERUBAHAN: Mencari berdasarkan status spesifik ---
     @Query("SELECT w FROM WatchList w WHERE w.userId = :userId AND w.status = :status")
     List<WatchList> findByUserIdAndStatus(@Param("userId") UUID userId, @Param("status") String status);
+
+    @Query("SELECT COUNT(w) FROM WatchList w WHERE w.userId = :userId AND w.status = :status")
+    long countByUserIdAndStatus(@Param("userId") UUID userId, @Param("status") String status);
 
     @Query("SELECT DISTINCT w.genre FROM WatchList w WHERE w.userId = :userId ORDER BY w.genre")
     List<String> findDistinctGenresByUserId(@Param("userId") UUID userId);
@@ -36,7 +44,6 @@ public interface WatchListRepository extends JpaRepository<WatchList, UUID> {
     @Query("SELECT w.genre, COUNT(w) FROM WatchList w WHERE w.userId = :userId GROUP BY w.genre")
     List<Object[]> countByGenre(@Param("userId") UUID userId);
 
-    // --- PERUBAHAN: Grouping berdasarkan status string ---
     @Query("SELECT w.status, COUNT(w) FROM WatchList w WHERE w.userId = :userId GROUP BY w.status")
     List<Object[]> countByStatusGroup(@Param("userId") UUID userId);
 

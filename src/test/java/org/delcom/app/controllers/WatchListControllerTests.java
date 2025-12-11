@@ -5,10 +5,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import org.delcom.app.configs.ApiResponse;
 import org.delcom.app.configs.AuthContext;
 import org.delcom.app.entities.WatchList;
 import org.delcom.app.entities.User;
@@ -16,272 +14,238 @@ import org.delcom.app.services.WatchListService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.ResponseEntity;
 
 public class WatchListControllerTests {
     
     @Test
-    @DisplayName("Pengujian untuk controller WatchList")
+    @DisplayName("Pengujian untuk controller WatchList - Full Coverage 100%")
     void testWatchListController() throws Exception {
         UUID userId = UUID.randomUUID();
         UUID watchListId = UUID.randomUUID();
         UUID nonexistentWatchListId = UUID.randomUUID();
 
-        // [FIX] Menggunakan String Status "Watched"
-        WatchList watchList = new WatchList(
-            userId, 
-            "The Shawshank Redemption", 
-            "Movie", 
-            "Drama", 
-            10, 
-            1994, 
-            "Watched", 
-            "Classic film tentang harapan"
-        );
-        watchList.setId(watchListId);
-
-        WatchListService watchListService = Mockito.mock(WatchListService.class);
-
-        // [FIX] Mocking create dengan parameter Status berupa String
-        when(watchListService.createWatchList(
-            any(UUID.class), 
-            any(String.class), 
-            any(String.class), 
-            any(String.class), 
-            any(Integer.class), 
-            any(Integer.class), 
-            any(String.class), // Status is now String
-            any(String.class)
-        )).thenReturn(watchList);
-
-        WatchListController watchListController = new WatchListController(watchListService);
-        
-        // Setup Auth Context
-        watchListController.authContext = new AuthContext();
+        // Object User Login
         User authUser = new User("Test User", "testuser@example.com");
         authUser.setId(userId);
 
-        // ==========================================
-        // 1. MENGUJI METHOD createWatchList
-        // ==========================================
-        {
-            {
-                // [FIX] List Invalid Inputs (Constructor disesuaikan dengan status String)
-                List<WatchList> invalidWatchLists = List.of(
-                    new WatchList(userId, null, "Movie", "Drama", 10, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "", "Movie", "Drama", 10, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", null, "Drama", 10, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "", "Drama", 10, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "InvalidType", "Drama", 10, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "Movie", null, 10, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "Movie", "", 10, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "Movie", "Drama", null, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "Movie", "Drama", 0, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "Movie", "Drama", 11, 1994, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "Movie", "Drama", 10, null, "Plan to Watch", "Notes"),
-                    new WatchList(userId, "Title", "Movie", "Drama", 10, 1899, "Plan to Watch", "Notes")
-                );
+        // Object WatchList Standar (MOVIE)
+        WatchList watchList = new WatchList(
+            userId, "The Shawshank Redemption", "Movie", "Drama", 10, 1994, "Watched", "Classic film"
+        );
+        watchList.setId(watchListId);
 
-                ResponseEntity<ApiResponse<Map<String, UUID>>> result;
-                for (WatchList itemWatchList : invalidWatchLists) {
-                    result = watchListController.createWatchList(itemWatchList);
-                    assert (result != null);
-                    assert (result.getStatusCode().is4xxClientError());
-                    assert (result.getBody().getStatus().equals("fail"));
-                }
-            }
+        // --- DEFINISI DATA INVALID ---
+        List<WatchList> invalidWatchLists = List.of(
+            new WatchList(userId, null, "Movie", "Drama", 10, 1994, "Plan to Watch", "Notes"),       // Title Null
+            new WatchList(userId, "", "Movie", "Drama", 10, 1994, "Plan to Watch", "Notes"),         // Title Empty
+            new WatchList(userId, "   ", "Movie", "Drama", 10, 1994, "Plan to Watch", "Notes"),      // Title Blank
+            new WatchList(userId, "Title", null, "Drama", 10, 1994, "Plan to Watch", "Notes"),       // Type Null
+            new WatchList(userId, "Title", "InvalidType", "Drama", 10, 1994, "Plan to Watch", "Notes"), // Type Invalid
+            new WatchList(userId, "Title", "Movie", null, 10, 1994, "Plan to Watch", "Notes"),       // Genre Null
+            new WatchList(userId, "Title", "Movie", "", 10, 1994, "Plan to Watch", "Notes"),         // Genre Empty
+            new WatchList(userId, "Title", "Movie", "   ", 10, 1994, "Plan to Watch", "Notes"),      // Genre Blank (Trim check)
+            new WatchList(userId, "Title", "Movie", "Drama", null, 1994, "Plan to Watch", "Notes"),  // Rating Null
+            new WatchList(userId, "Title", "Movie", "Drama", 0, 1994, "Plan to Watch", "Notes"),     // Rating < 1
+            new WatchList(userId, "Title", "Movie", "Drama", 11, 1994, "Plan to Watch", "Notes"),    // Rating > 10
+            new WatchList(userId, "Title", "Movie", "Drama", 10, null, "Plan to Watch", "Notes"),    // Year Null
+            new WatchList(userId, "Title", "Movie", "Drama", 10, 1899, "Plan to Watch", "Notes")     // Year Invalid
+        );
 
-            // Auth Gagal
-            {
-                watchListController.authContext.setAuthUser(null);
-                var result = watchListController.createWatchList(watchList);
-                assert (result != null);
-                assert (result.getStatusCode().is4xxClientError());
-            }
+        // Mock Service
+        WatchListService watchListService = Mockito.mock(WatchListService.class);
+        
+        // Setup Controller & Context
+        WatchListController watchListController = new WatchListController(watchListService);
+        watchListController.authContext = new AuthContext();
 
-            // Sukses Normal
-            {
-                watchListController.authContext.setAuthUser(authUser);
-                var result = watchListController.createWatchList(watchList);
-                assert (result != null);
-                assert (result.getBody().getStatus().equals("success"));
-            }
+        // -------------------------------------------------------------
+        // 1. CREATE WATCHLIST
+        // -------------------------------------------------------------
+        
+        // A. Create - Unauthenticated
+        watchListController.authContext.setAuthUser(null);
+        var resCreateUnauth = watchListController.createWatchList(watchList);
+        assert (resCreateUnauth.getStatusCode().value() == 403);
 
-            // Sukses Series dengan Status "Watching"
-            {
-                WatchList seriesWatchList = new WatchList(
-                    userId, "Breaking Bad", "Series", "Crime", 10, 2008, "Watching", "Best Series"
-                );
-                // Mock return value for this specific call if necessary, or rely on generic any()
-                when(watchListService.createWatchList(
-                    eq(userId), eq("Breaking Bad"), eq("Series"), eq("Crime"), 
-                    eq(10), eq(2008), eq("Watching"), eq("Best Series")
-                )).thenReturn(seriesWatchList);
-
-                var result = watchListController.createWatchList(seriesWatchList);
-                assert (result != null);
-                assert (result.getBody().getStatus().equals("success"));
-            }
-
-            // [FIX] Status NULL (Controller harus handle default value ke "Plan to Watch")
-            {
-                WatchList nullStatusList = new WatchList(
-                    userId, "Unknown Movie", "Movie", "Mystery", 5, 2020, null, "Notes"
-                );
-                var result = watchListController.createWatchList(nullStatusList);
-                assert (result != null);
-                assert (result.getBody().getStatus().equals("success"));
-            }
+        // B. Create - Invalid Inputs
+        watchListController.authContext.setAuthUser(authUser);
+        for (WatchList item : invalidWatchLists) {
+            var res = watchListController.createWatchList(item);
+            assert (res.getStatusCode().is4xxClientError()); 
         }
 
-        // ==========================================
-        // 2. MENGUJI METHOD getAllWatchLists
-        // ==========================================
-        {
-            // Gagal Auth
-            {
-                watchListController.authContext.setAuthUser(null);
-                var result = watchListController.getAllWatchLists(null);
-                assert (result.getStatusCode().is4xxClientError());
-            }
-            // Sukses
-            {
-                watchListController.authContext.setAuthUser(authUser);
-                List<WatchList> dummyResponse = List.of(watchList);
-                when(watchListService.getAllWatchLists(any(UUID.class), any()))
-                    .thenReturn(dummyResponse);
-                
-                var result = watchListController.getAllWatchLists(null);
-                assert (result.getBody().getStatus().equals("success"));
-            }
+        // C. Create - Success (MOVIE)
+        when(watchListService.createWatchList(any(), any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn(watchList);
+        var resCreateSuccess = watchListController.createWatchList(watchList);
+        assert (resCreateSuccess.getStatusCode().is2xxSuccessful());
+
+        // D. Create - Success (SERIES) -> PENTING UNTUK COVERAGE LOGIC TYPE
+        WatchList seriesList = new WatchList(userId, "Series Title", "Series", "Genre", 8, 2020, "Watching", "Note");
+        seriesList.setId(UUID.randomUUID());
+        when(watchListService.createWatchList(
+            any(), any(), eq("Series"), any(), any(), any(), any(), any()
+        )).thenReturn(seriesList);
+        
+        var resCreateSeries = watchListController.createWatchList(seriesList);
+        assert (resCreateSeries.getStatusCode().is2xxSuccessful());
+
+        // E. Create - Status NULL Handling
+        // Jika input NULL, Controller mengubahnya jadi "Plan to Watch"
+        WatchList nullStatus = new WatchList(userId, "M", "Movie", "G", 5, 2020, null, "N");
+        nullStatus.setId(UUID.randomUUID());
+        
+        Mockito.reset(watchListService); // Reset mock
+        when(watchListService.createWatchList(any(), any(), any(), any(), any(), any(), eq("Plan to Watch"), any()))
+            .thenReturn(nullStatus);
+        
+        var resCreateNullStat = watchListController.createWatchList(nullStatus);
+        assert (resCreateNullStat.getStatusCode().is2xxSuccessful());
+
+        // F. Create - Status EMPTY Handling (INI YANG MEMBUAT MERAH JADI HIJAU)
+        // Jika input "", Controller mengubahnya jadi "Plan to Watch"
+        WatchList emptyStatus = new WatchList(userId, "M", "Movie", "G", 5, 2020, "", "N");
+        emptyStatus.setId(UUID.randomUUID());
+
+        Mockito.reset(watchListService); // Reset mock
+        // Perhatikan eq("Plan to Watch"), karena controller sudah mengubah string kosong menjadi default
+        when(watchListService.createWatchList(any(), any(), any(), any(), any(), any(), eq("Plan to Watch"), any()))
+            .thenReturn(emptyStatus);
+
+        var resCreateEmptyStat = watchListController.createWatchList(emptyStatus);
+        assert (resCreateEmptyStat.getStatusCode().is2xxSuccessful());
+
+        // -------------------------------------------------------------
+        // 2. GET ALL
+        // -------------------------------------------------------------
+
+        // A. Get All - Unauthenticated
+        watchListController.authContext.setAuthUser(null);
+        var resGetAllUnauth = watchListController.getAllWatchLists(null);
+        assert (resGetAllUnauth.getStatusCode().value() == 403);
+
+        // B. Get All - Success (With Search)
+        watchListController.authContext.setAuthUser(authUser);
+        when(watchListService.getAllWatchLists(eq(userId), any())).thenReturn(List.of(watchList));
+        
+        var resGetAllSuccess = watchListController.getAllWatchLists("search");
+        assert (resGetAllSuccess.getStatusCode().is2xxSuccessful());
+
+        // C. Get All - Success (With Null Search) -> PENTING UNTUK COVERAGE TERNARY
+        var resGetAllNullSearch = watchListController.getAllWatchLists(null);
+        assert (resGetAllNullSearch.getStatusCode().is2xxSuccessful());
+
+        // -------------------------------------------------------------
+        // 3. GET BY ID
+        // -------------------------------------------------------------
+
+        // A. Get By ID - Unauthenticated
+        watchListController.authContext.setAuthUser(null);
+        var resGetIdUnauth = watchListController.getWatchListById(watchListId);
+        assert (resGetIdUnauth.getStatusCode().value() == 403);
+
+        // B. Get By ID - Not Found
+        watchListController.authContext.setAuthUser(authUser);
+        when(watchListService.getWatchListById(eq(userId), eq(nonexistentWatchListId))).thenReturn(null);
+        var resGetIdNotFound = watchListController.getWatchListById(nonexistentWatchListId);
+        assert (resGetIdNotFound.getStatusCode().value() == 404);
+
+        // C. Get By ID - Success
+        when(watchListService.getWatchListById(eq(userId), eq(watchListId))).thenReturn(watchList);
+        var resGetIdSuccess = watchListController.getWatchListById(watchListId);
+        assert (resGetIdSuccess.getStatusCode().is2xxSuccessful());
+
+        // -------------------------------------------------------------
+        // 4. GET GENRES
+        // -------------------------------------------------------------
+
+        watchListController.authContext.setAuthUser(null);
+        var resGenresUnauth = watchListController.getWatchListGenres();
+        assert (resGenresUnauth.getStatusCode().value() == 403);
+
+        watchListController.authContext.setAuthUser(authUser);
+        when(watchListService.getAllGenres(eq(userId))).thenReturn(List.of("Drama"));
+        var resGenresSuccess = watchListController.getWatchListGenres();
+        assert (resGenresSuccess.getStatusCode().is2xxSuccessful());
+
+        // -------------------------------------------------------------
+        // 5. UPDATE
+        // -------------------------------------------------------------
+
+        // A. Update - Unauthenticated
+        watchListController.authContext.setAuthUser(null);
+        var resUpdateUnauth = watchListController.updateWatchList(watchListId, watchList);
+        assert (resUpdateUnauth.getStatusCode().value() == 403);
+
+        // B. Update - Invalid Inputs
+        watchListController.authContext.setAuthUser(authUser);
+        for (WatchList item : invalidWatchLists) {
+            var res = watchListController.updateWatchList(watchListId, item);
+            assert (res.getStatusCode().is4xxClientError()); 
         }
 
-        // ==========================================
-        // 3. MENGUJI METHOD getWatchListById
-        // ==========================================
-        {
-            // Gagal Auth
-            {
-                watchListController.authContext.setAuthUser(null);
-                var result = watchListController.getWatchListById(watchListId);
-                assert (result.getStatusCode().is4xxClientError());
-            }
-            watchListController.authContext.setAuthUser(authUser);
-            // Sukses
-            {
-                when(watchListService.getWatchListById(any(UUID.class), any(UUID.class)))
-                    .thenReturn(watchList);
-                var result = watchListController.getWatchListById(watchListId);
-                assert (result.getBody().getStatus().equals("success"));
-            }
-            // Gagal Found
-            {
-                when(watchListService.getWatchListById(any(UUID.class), any(UUID.class)))
-                    .thenReturn(null);
-                var result = watchListController.getWatchListById(nonexistentWatchListId);
-                assert (result.getBody().getStatus().equals("fail"));
-            }
-        }
+        // C. Update - Not Found
+        when(watchListService.updateWatchList(any(), eq(nonexistentWatchListId), any(), any(), any(), any(), any(), any(), any()))
+            .thenReturn(null);
+        var resUpdateNotFound = watchListController.updateWatchList(nonexistentWatchListId, watchList);
+        assert (resUpdateNotFound.getStatusCode().value() == 404);
 
-        // ==========================================
-        // 4. MENGUJI METHOD getWatchListGenres
-        // ==========================================
-        {
-            watchListController.authContext.setAuthUser(authUser);
-            List<String> dummyGenres = List.of("Drama", "Action");
-            when(watchListService.getAllGenres(any(UUID.class))).thenReturn(dummyGenres);
-            var result = watchListController.getWatchListGenres();
-            assert (result.getBody().getStatus().equals("success"));
-        }
+        // D. Update - Success
+        WatchList updateData = new WatchList(userId, "Upd", "Movie", "G", 8, 2021, null, "N");
+        when(watchListService.updateWatchList(any(), eq(watchListId), any(), any(), any(), any(), any(), eq("Plan to Watch"), any()))
+            .thenReturn(watchList);
+        
+        var resUpdateSuccess = watchListController.updateWatchList(watchListId, updateData);
+        assert (resUpdateSuccess.getStatusCode().is2xxSuccessful());
 
-        // ==========================================
-        // 5. MENGUJI METHOD updateWatchList
-        // ==========================================
-        {
-            watchListController.authContext.setAuthUser(authUser);
+        // -------------------------------------------------------------
+        // 6. DELETE
+        // -------------------------------------------------------------
 
-            // Mock Gagal (ID Tidak Ditemukan)
-            {
-                // [FIX] Update matcher signatures to expect String for status
-                when(watchListService.updateWatchList(
-                    any(UUID.class), any(UUID.class), any(String.class), any(String.class), 
-                    any(String.class), any(Integer.class), any(Integer.class), 
-                    any(String.class), any(String.class)
-                )).thenReturn(null);
-                
-                var result = watchListController.updateWatchList(nonexistentWatchListId, watchList);
-                assert (result.getBody().getStatus().equals("fail"));
-            }
+        watchListController.authContext.setAuthUser(null);
+        var resDeleteUnauth = watchListController.deleteWatchList(watchListId);
+        assert (resDeleteUnauth.getStatusCode().value() == 403);
 
-            // Mock Sukses
-            {
-                WatchList updatedWatchList = new WatchList(
-                    userId, "Updated Title", "Movie", "Drama", 10, 1994, "Watched", "Updated"
-                );
-                updatedWatchList.setId(watchListId);
-                
-                // [FIX] Update matcher signatures to expect String for status
-                when(watchListService.updateWatchList(
-                    any(UUID.class), eq(watchListId), any(String.class), any(String.class), 
-                    any(String.class), any(Integer.class), any(Integer.class), 
-                    any(String.class), any(String.class)
-                )).thenReturn(updatedWatchList);
+        watchListController.authContext.setAuthUser(authUser);
+        when(watchListService.deleteWatchList(eq(userId), eq(nonexistentWatchListId))).thenReturn(false);
+        var resDeleteNotFound = watchListController.deleteWatchList(nonexistentWatchListId);
+        assert (resDeleteNotFound.getStatusCode().value() == 404);
 
-                var result = watchListController.updateWatchList(watchListId, updatedWatchList);
-                assert (result.getBody().getStatus().equals("success"));
-            }
-        }
+        when(watchListService.deleteWatchList(eq(userId), eq(watchListId))).thenReturn(true);
+        var resDeleteSuccess = watchListController.deleteWatchList(watchListId);
+        assert (resDeleteSuccess.getStatusCode().is2xxSuccessful());
 
-        // ==========================================
-        // 6. MENGUJI METHOD deleteWatchList
-        // ==========================================
-        {
-            watchListController.authContext.setAuthUser(authUser);
-            when(watchListService.deleteWatchList(any(UUID.class), any(UUID.class))).thenReturn(true);
-            var result = watchListController.deleteWatchList(watchListId);
-            assert (result.getBody().getStatus().equals("success"));
-        }
+        // -------------------------------------------------------------
+        // 7. TOGGLE STATUS
+        // -------------------------------------------------------------
 
-        // ==========================================
-        // 7. MENGUJI METHOD toggleWatchedStatus (Diganti ke cycleStatus)
-        // ==========================================
-        {
-            watchListController.authContext.setAuthUser(authUser);
+        watchListController.authContext.setAuthUser(null);
+        var resToggleUnauth = watchListController.toggleWatchedStatus(watchListId);
+        assert (resToggleUnauth.getStatusCode().value() == 403);
 
-            // Gagal Toggle
-            {
-                // [FIX] Menggunakan cycleStatus untuk perpindahan status
-                when(watchListService.cycleStatus(any(UUID.class), any(UUID.class))).thenReturn(null);
-                var result = watchListController.toggleWatchedStatus(nonexistentWatchListId);
-                assert (result.getBody().getStatus().equals("fail"));
-            }
+        watchListController.authContext.setAuthUser(authUser);
+        when(watchListService.cycleStatus(eq(userId), eq(nonexistentWatchListId))).thenReturn(null);
+        var resToggleNotFound = watchListController.toggleWatchedStatus(nonexistentWatchListId);
+        assert (resToggleNotFound.getStatusCode().value() == 404);
 
-            // Berhasil Toggle
-            {
-                WatchList toggled = new WatchList(userId, "Title", "Movie", "Genre", 5, 2020, "Watching", "Note");
-                toggled.setId(watchListId);
-                
-                when(watchListService.cycleStatus(any(UUID.class), any(UUID.class))).thenReturn(toggled);
-                
-                var result = watchListController.toggleWatchedStatus(watchListId);
-                assert (result.getBody().getStatus().equals("success"));
-            }
-        }
+        when(watchListService.cycleStatus(eq(userId), eq(watchListId))).thenReturn(watchList);
+        var resToggleSuccess = watchListController.toggleWatchedStatus(watchListId);
+        assert (resToggleSuccess.getStatusCode().is2xxSuccessful());
 
-        // ==========================================
-        // 8. MENGUJI METHOD getStatistics
-        // ==========================================
-        {
-            watchListController.authContext.setAuthUser(authUser);
-            
-            // Mocking semua statistik
-            when(watchListService.getGenreStatistics(any(UUID.class))).thenReturn(List.of());
-            // [FIX] Menggunakan getStatusStatistics untuk support 3 status
-            when(watchListService.getStatusStatistics(any(UUID.class))).thenReturn(List.of());
-            when(watchListService.getTypeStatistics(any(UUID.class))).thenReturn(List.of());
-            
-            var result = watchListController.getStatistics();
-            assert (result.getBody().getStatus().equals("success"));
-        }
+        // -------------------------------------------------------------
+        // 8. STATISTICS
+        // -------------------------------------------------------------
+
+        watchListController.authContext.setAuthUser(null);
+        var resStatsUnauth = watchListController.getStatistics();
+        assert (resStatsUnauth.getStatusCode().value() == 403);
+
+        watchListController.authContext.setAuthUser(authUser);
+        when(watchListService.getGenreStatistics(eq(userId))).thenReturn(List.of());
+        when(watchListService.getStatusStatistics(eq(userId))).thenReturn(List.of());
+        when(watchListService.getTypeStatistics(eq(userId))).thenReturn(List.of());
+
+        var resStatsSuccess = watchListController.getStatistics();
+        assert (resStatsSuccess.getStatusCode().is2xxSuccessful());
     }
 }

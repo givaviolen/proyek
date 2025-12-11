@@ -18,12 +18,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult; // <--- WAJIB DI-IMPORT
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -44,14 +43,13 @@ public class WatchListView {
     @PostMapping("/add")
     public String postAddWatchList(
             @Valid @ModelAttribute("watchListForm") WatchListForm watchListForm,
-            BindingResult bindingResult, // <--- TAMBAHAN: Menangkap error validasi
+            BindingResult bindingResult,
             @RequestParam(value = "coverImage", required = false) MultipartFile coverImage,
             RedirectAttributes redirectAttributes) {
 
         User authUser = getAuthUser();
         if (authUser == null) return "redirect:/auth/logout";
 
-        // 1. Cek Error Validasi (Agar tidak White Label Error Page / 400 Bad Request)
         if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getFieldError() != null 
                     ? bindingResult.getFieldError().getDefaultMessage() 
@@ -105,14 +103,13 @@ public class WatchListView {
     @PostMapping("/edit")
     public String postEditWatchList(
             @Valid @ModelAttribute("watchListForm") WatchListForm watchListForm,
-            BindingResult bindingResult, // <--- TAMBAHAN
+            BindingResult bindingResult,
             @RequestParam(value = "coverImage", required = false) MultipartFile coverImage,
             RedirectAttributes redirectAttributes) {
 
         User authUser = getAuthUser();
         if (authUser == null) return "redirect:/auth/logout";
 
-        // 1. Cek Validasi
         if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getFieldError() != null 
                     ? bindingResult.getFieldError().getDefaultMessage() 
@@ -162,28 +159,22 @@ public class WatchListView {
     }
 
     // ===========================
-    // DELETE WATCHLIST
+    // DELETE WATCHLIST (DIPERBAIKI)
     // ===========================
     @PostMapping("/delete")
     public String postDeleteWatchList(
-            @Valid @ModelAttribute("watchListForm") WatchListForm watchListForm,
-            BindingResult bindingResult, // <--- TAMBAHAN (Best Practice)
+            @RequestParam("id") UUID id, // UBAH: Menggunakan RequestParam, bukan ModelAttribute
             RedirectAttributes redirectAttributes) {
         
         User authUser = getAuthUser();
         if (authUser == null) return "redirect:/auth/logout";
 
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", "Data tidak valid untuk dihapus");
-            return "redirect:/watchlists";
-        }
-
-        if (watchListForm.getId() == null) {
+        if (id == null) {
             redirectAttributes.addFlashAttribute("error", "ID watchlist tidak valid");
             return "redirect:/watchlists";
         }
 
-        boolean deleted = watchListService.deleteWatchList(authUser.getId(), watchListForm.getId());
+        boolean deleted = watchListService.deleteWatchList(authUser.getId(), id);
 
         if (!deleted) {
             redirectAttributes.addFlashAttribute("error", "Gagal menghapus watchlist atau data tidak ditemukan");
@@ -223,7 +214,7 @@ public class WatchListView {
     @PostMapping("/edit-cover")
     public String postEditCoverWatchList(
             @Valid @ModelAttribute("coverWatchListForm") CoverWatchListForm coverWatchListForm,
-            BindingResult bindingResult, // <--- TAMBAHAN
+            BindingResult bindingResult,
             RedirectAttributes redirectAttributes) {
 
         User authUser = getAuthUser();

@@ -29,8 +29,11 @@ public class WatchListHomeView {
     }
 
     @GetMapping
-    public String index(Model model, @RequestParam(required = false) String search) {
-        // Autentikasi
+    public String index(Model model, 
+                        @RequestParam(required = false) String search,
+                        @RequestParam(required = false) String type) { // <--- TAMBAHAN PARAMETER TYPE
+        
+        // 1. Auth Check
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if ((authentication instanceof AnonymousAuthenticationToken)) {
             return "redirect:/auth/login";
@@ -42,65 +45,63 @@ public class WatchListHomeView {
         User authUser = (User) principal;
         model.addAttribute("auth", authUser);
 
-        // Data watchlists
-        List<WatchList> watchLists = watchListService.getAllWatchLists(authUser.getId(), search != null ? search : "");
+        // 2. Logika Pengambilan Data (Filter vs Search vs All)
+        List<WatchList> watchLists;
+
+        if (search != null && !search.trim().isEmpty()) {
+            // Jika ada search, prioritaskan search
+            watchLists = watchListService.getAllWatchLists(authUser.getId(), search.trim());
+        } else if (type != null && !type.trim().isEmpty()) {
+            // Jika ada filter type (Movie/Series), panggil service getByType
+            watchLists = watchListService.getWatchListsByType(authUser.getId(), type);
+        } else {
+            // Default: Ambil semua
+            watchLists = watchListService.getAllWatchLists(authUser.getId(), "");
+        }
+
         model.addAttribute("watchLists", watchLists);
 
-        // Hitung statistik summary
-        long totalMovies = watchLists.stream()
-                .filter(w -> "Movie".equals(w.getType()))
-                .count();
+        // --- STATISTIK SUMMARY & CHART (Logic Tetap Sama) ---
+        // Kita hitung ulang berdasarkan data total user (bukan data yang difilter di tabel)
+        // Agar chart tetap menunjukkan statistik keseluruhan user meskipun tabel difilter
         
-        long totalSeries = watchLists.stream()
-                .filter(w -> "Series".equals(w.getType()))
-                .count();
+        // Ambil semua data raw untuk statistik
+        List<WatchList> allDataForStats = watchListService.getAllWatchLists(authUser.getId(), "");
 
-        // FIX: Menggunakan equals String status
-        long totalWatched = watchLists.stream()
-                .filter(w -> "Watched".equals(w.getStatus()))
-                .count();
-
-        // FIX: Menghitung status lainnya
-        long totalWatching = watchLists.stream()
-                .filter(w -> "Watching".equals(w.getStatus()))
-                .count();
+        long totalMovies = allDataForStats.stream().filter(w -> "Movie".equals(w.getType())).count();
+        long totalSeries = allDataForStats.stream().filter(w -> "Series".equals(w.getType())).count();
+        long totalItems = allDataForStats.size();
         
-        long totalPlan = watchLists.stream()
-                .filter(w -> "Plan to Watch".equals(w.getStatus()) || w.getStatus() == null)
-                .count();
-        
-        long totalUnwatched = totalWatching + totalPlan; // Gabungan untuk backward compatibility tampilan
+        long countWatched = watchListService.countByStatus(authUser.getId(), "Watched");
+        long countWatching = watchListService.countByStatus(authUser.getId(), "Watching");
+        long countPlan = watchListService.countByStatus(authUser.getId(), "Plan to Watch");
+        long totalUnwatched = countPlan + countWatching; 
 
-        // Hitung rata-rata rating
-        double averageRating = watchLists.stream()
-                .mapToInt(WatchList::getRating)
-                .average()
-                .orElse(0.0);
+        double averageRating = allDataForStats.stream().mapToInt(WatchList::getRating).average().orElse(0.0);
 
         model.addAttribute("totalMovies", totalMovies);
         model.addAttribute("totalSeries", totalSeries);
-        model.addAttribute("totalWatched", totalWatched);
-        model.addAttribute("totalUnwatched", totalUnwatched);
-        model.addAttribute("totalItems", watchLists.size());
+        model.addAttribute("totalItems", totalItems);
         model.addAttribute("averageRating", String.format("%.1f", averageRating));
+        model.addAttribute("totalWatched", countWatched);
+        model.addAttribute("totalUnwatched", totalUnwatched);
 
-        // Data untuk chart - Genre distribution
-        Map<String, Long> genreStats = watchLists.stream()
+        // Data Chart
+        model.addAttribute("watchedCount", countWatched);
+        model.addAttribute("watchingCount", countWatching);
+        model.addAttribute("planToWatchCount", countPlan);
+        model.addAttribute("unwatchedCount", countPlan); 
+
+        // Genre Stats
+        Map<String, Long> genreStats = allDataForStats.stream()
                 .collect(Collectors.groupingBy(WatchList::getGenre, Collectors.counting()));
         model.addAttribute("genreStats", genreStats);
-
-        // Data untuk chart - Type distribution
         model.addAttribute("movieCount", totalMovies);
         model.addAttribute("seriesCount", totalSeries);
 
-        // FIX: Data untuk chart - Watched Status (Kirim 3 data)
-        model.addAttribute("watchedCount", totalWatched);
-        model.addAttribute("watchingCount", totalWatching);
-        model.addAttribute("planToWatchCount", totalPlan);
-        // Fallback variable jika HTML masih pakai unwatchedCount
-        model.addAttribute("unwatchedCount", totalPlan); 
+        // Kirim kembali parameter type agar dropdown tetap terpilih
+        model.addAttribute("currentType", type);
 
-        // Form untuk modal
         model.addAttribute("watchListForm", new WatchListForm());
 
         return ConstUtil.TEMPLATE_PAGES_WATCHLISTS_HOME;

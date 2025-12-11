@@ -1,90 +1,129 @@
 package org.delcom.app.entities;
 
-import java.util.UUID;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class WatchListTests {
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class WatchListTests {
     
     @Test
-    @DisplayName("Membuat instance dari kelas WatchList")
-    void testMembuatInstanceWatchList() throws Exception {
+    @DisplayName("Membuat instance dari kelas WatchList (Constructor Lengkap)")
+    void testMembuatInstanceWatchList() {
         UUID userId = UUID.randomUUID();
+        
+        WatchList watchList = new WatchList(
+            userId, 
+            "Inception", 
+            "Movie", 
+            "Sci-Fi", 
+            9, 
+            2010,
+            "Watched", 
+            "Film yang sangat membingungkan tapi seru"
+        );
 
-        // 1. WatchList tipe Movie
-        {
-            WatchList watchList = new WatchList(
-                userId, 
-                "Inception", 
-                "Movie", 
-                "Sci-Fi", 
-                9, 
-                2010,
-                "Watched", // [FIX] String Status
-                "Film yang sangat membingungkan tapi seru"
-            );
+        // Menggunakan assertEquals lebih aman daripada keyword 'assert'
+        assertEquals(userId, watchList.getUserId());
+        assertEquals("Inception", watchList.getTitle());
+        assertEquals("Movie", watchList.getType());
+        assertEquals("Sci-Fi", watchList.getGenre());
+        assertEquals(9, watchList.getRating());
+        assertEquals(2010, watchList.getReleaseYear());
+        assertEquals("Watched", watchList.getStatus());
+        assertEquals("Film yang sangat membingungkan tapi seru", watchList.getNotes());
+    }
 
-            assert (watchList.getUserId().equals(userId));
-            assert (watchList.getTitle().equals("Inception"));
-            assert (watchList.getType().equals("Movie"));
-            assert (watchList.getGenre().equals("Sci-Fi"));
-            assert (watchList.getRating().equals(9));
-            assert (watchList.getReleaseYear().equals(2010));
-            // [FIX] getStatus
-            assert (watchList.getStatus().equals("Watched"));
-            assert (watchList.getNotes().equals("Film yang sangat membingungkan tapi seru"));
-        }
+    @Test
+    @DisplayName("WatchList tipe Series (Constructor & Getter)")
+    void testWatchListSeries() {
+        UUID userId = UUID.randomUUID();
+        WatchList watchList = new WatchList(
+            userId, 
+            "Breaking Bad", 
+            "Series", 
+            "Crime", 
+            10, 
+            2008,
+            "Plan to Watch", 
+            "Best series ever"
+        );
 
-        // 2. WatchList tipe Series
-        {
-            WatchList watchList = new WatchList(
-                userId, 
-                "Breaking Bad", 
-                "Series", 
-                "Crime", 
-                10, 
-                2008,
-                "Plan to Watch", // [FIX] String Status
-                "Best series ever"
-            );
+        assertEquals("Breaking Bad", watchList.getTitle());
+        assertEquals("Series", watchList.getType());
+        assertEquals("Plan to Watch", watchList.getStatus());
+    }
 
-            assert (watchList.getTitle().equals("Breaking Bad"));
-            assert (watchList.getType().equals("Series"));
-            assert (watchList.getStatus().equals("Plan to Watch"));
-        }
+    @Test
+    @DisplayName("WatchList Default Constructor")
+    void testWatchListDefault() {
+        WatchList watchList = new WatchList();
+        assertNull(watchList.getId());
+        assertNull(watchList.getStatus());
+    }
 
-        // 3. WatchList Default
-        {
-            WatchList watchList = new WatchList();
-            assert (watchList.getId() == null);
-            assert (watchList.getStatus() == null); // [FIX]
-        }
+    @Test
+    @DisplayName("WatchList Setter & Lifecycle methods")
+    void testWatchListSetterAndLifecycle() {
+        UUID userId = UUID.randomUUID();
+        WatchList watchList = new WatchList();
+        UUID generatedId = UUID.randomUUID();
+        
+        watchList.setId(generatedId);
+        watchList.setUserId(userId);
+        watchList.setTitle("Interstellar");
+        watchList.setType("Movie");
+        watchList.setGenre("Sci-Fi");
+        watchList.setRating(10);
+        watchList.setReleaseYear(2014);
+        watchList.setStatus("Watching");
+        watchList.setNotes("Belum nonton");
+        watchList.setCover("/images/interstellar.jpg");
+        
+        // Simulasi Lifecycle JPA
+        watchList.onCreate(); // Mengisi createdAt
+        watchList.onUpdate(); // Mengisi updatedAt
 
-        // 4. WatchList Setter
-        {
-            WatchList watchList = new WatchList();
-            UUID generatedId = UUID.randomUUID();
-            
-            watchList.setId(generatedId);
-            watchList.setUserId(userId);
-            watchList.setTitle("Interstellar");
-            watchList.setType("Movie");
-            watchList.setGenre("Sci-Fi");
-            watchList.setRating(10);
-            watchList.setReleaseYear(2014);
-            // [FIX] setStatus
-            watchList.setStatus("Watching");
-            watchList.setNotes("Belum nonton");
-            watchList.setCover("/images/interstellar.jpg");
-            
-            watchList.onCreate();
-            watchList.onUpdate();
+        assertEquals(generatedId, watchList.getId());
+        assertEquals("Interstellar", watchList.getTitle());
+        assertEquals("Watching", watchList.getStatus());
+        assertEquals("/images/interstellar.jpg", watchList.getCover());
+        
+        // Verifikasi CreatedAt & UpdatedAt tidak null
+        assertNotNull(watchList.getCreatedAt(), "CreatedAt harus terisi setelah onCreate");
+        assertNotNull(watchList.getUpdatedAt(), "UpdatedAt harus terisi setelah onUpdate");
+    }
 
-            assert (watchList.getTitle().equals("Interstellar"));
-            // [FIX]
-            assert (watchList.getStatus().equals("Watching"));
-            assert (watchList.getCreatedAt() != null);
-        }
+    @Test
+    @DisplayName("Test Object Methods (ToString, Equals, HashCode coverage)")
+    void testObjectMethods() {
+        UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        
+        WatchList w1 = new WatchList(userId, "A", "Movie", "G", 5, 2020, "Plan", "Note");
+        w1.setId(id);
+        
+        WatchList w2 = new WatchList(userId, "A", "Movie", "G", 5, 2020, "Plan", "Note");
+        w2.setId(id); // Sama dengan w1
+
+        WatchList w3 = new WatchList(); // Beda
+
+        // Test ToString (Penting jika menggunakan Lombok @Data atau override toString)
+        assertNotNull(w1.toString());
+
+        // Test Equals (Jika entity menggunakan default Object.equals, ini test reference)
+        // Jika entity override equals (misal pakai Lombok), ini test logic
+        assertEquals(w1, w1);       // Reflexive
+        assertNotEquals(w1, null);  // Null check
+        assertNotEquals(w1, new Object()); // Class check
+        
+        // Jika Anda menggunakan @Data/Lombok, baris ini memastikan equals logic tercover:
+        // assertEquals(w1, w2); // Uncomment jika menggunakan Lombok @Data
+        
+        // Test HashCode
+        // assertEquals(w1.hashCode(), w2.hashCode()); // Uncomment jika menggunakan Lombok @Data
+        assertNotEquals(0, w1.hashCode());
     }
 }

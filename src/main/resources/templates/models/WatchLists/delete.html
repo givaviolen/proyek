@@ -1,37 +1,23 @@
 <th:block th:fragment="deleteWatchListModal">
-    <!-- Modal Delete -->
     <div class="modal fade" id="deleteWatchListModal" tabindex="-1" aria-labelledby="deleteWatchListModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background-color: #fcfbf4; border: 2px solid #000;">
-                
                 <div class="modal-header" style="border-bottom: 2px solid #ddd;">
-                    <h5 class="modal-title fw-bold text-danger" id="deleteWatchListModalLabel">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Konfirmasi Hapus
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title fw-bold text-danger" id="deleteWatchListModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i> Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-
-                <!-- Form Action ke /watchlists/delete -->
                 <form th:action="@{/watchlists/delete}" method="post">
-                    
-                    <!-- [PENTING] Hidden Input ID diletakkan langsung di bawah form -->
-                    <!-- Pastikan 'name="id"' ini sama persis dengan @RequestParam("id") di Controller -->
                     <input type="hidden" id="deleteWatchListId" name="id" />
-
                     <div class="modal-body text-center py-4">
-                        <div class="mb-3">
-                            <i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
-                        </div>
-                        
+                        <div class="mb-3"><i class="bi bi-trash text-danger" style="font-size: 3rem;"></i></div>
                         <p class="mb-1">Apakah Anda yakin ingin menghapus:</p>
-                        <!-- Judul Film akan muncul di sini via JS -->
                         <h4 class="fw-bold" id="deleteWatchListTitleDisplay">...</h4>
                         <p class="text-muted small mt-2">Tindakan ini tidak dapat dibatalkan.</p>
                     </div>
-
                     <div class="modal-footer" style="border-top: 2px solid #ddd;">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                        <!-- TAMBAHAN: onclick="saveScrollPosition()" -->
+                        <button type="submit" class="btn btn-danger" onclick="saveScrollPosition()">Ya, Hapus</button>
                     </div>
                 </form>
             </div>
