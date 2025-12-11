@@ -1,3 +1,4 @@
+
 package org.delcom.app.configs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
