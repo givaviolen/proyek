@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ... (CSS TETAP SAMA, TIDAK ADA PERUBAHAN) ... */
         :root { --bg-body: #f5f3e8; --bg-input: #ebe9d9; --color-blue-dark: #1e3a52; --color-gold: #b8935c; --color-gold-light: #c9b17a; --color-beige: #d4c5a0; --color-black: #1a1a1a; }
         body { background-color: var(--bg-body); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--color-black); min-height: 100vh; overflow-x: hidden; }
         .custom-header-bar { width: 100vw; height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); margin-bottom: 30px; background: linear-gradient(120deg, var(--bg-body) 0%, var(--bg-body) 60%, var(--color-gold) 60%, var(--color-gold) 61.5%, var(--color-blue-dark) 61.5%, var(--color-blue-dark) 100%); border-bottom: 2px solid var(--color-gold); }
@@ -53,19 +52,92 @@
         
         .movie-title-link { text-decoration: none; color: inherit; }
         .movie-title-link:hover .movie-title { color: var(--color-gold); }
-        .movie-title { font-size: 20px; font-weight: 700; color: #000; margin-bottom: 8px; line-height: 1.2; -webkit-line-clamp: 2; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; transition: color 0.2s; }
+        
+        /* UPDATED: Padding Right ditambahkan agar teks tidak tertutup tombol */
+        .movie-title { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: #000; 
+            margin-bottom: 8px; 
+            line-height: 1.2; 
+            padding-right: 95px; /* Jarak aman dari tombol */
+            -webkit-line-clamp: 2; 
+            overflow: hidden; 
+            display: -webkit-box; 
+            -webkit-box-orient: vertical; 
+            transition: color 0.2s; 
+        }
         
         .movie-meta { font-size: 13px; color: #2a2a2a; margin-bottom: 4px; font-weight: 500; }
         .star-rating { color: var(--color-gold); margin: 8px 0 10px 0; font-size: 14px; display: flex; align-items: center; gap: 2px; }
         .star-rating i { font-size: 14px; }
 
-        .edit-icon-btn { position: absolute; top: 12px; right: 12px; color: var(--color-gold); border: 2px solid var(--color-gold); border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.8); text-decoration: none; z-index: 5; }
+        /* UPDATED: Button Styles (Smaller & Tighter) */
+        
+        /* Edit Button (Right most) */
+        .edit-icon-btn { 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            color: var(--color-gold); 
+            border: 1px solid var(--color-gold); /* 1px border */
+            border-radius: 4px; 
+            width: 24px;   /* Smaller */
+            height: 24px;  /* Smaller */
+            font-size: 12px; /* Smaller Icon */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            background: rgba(255, 255, 255, 0.9); 
+            text-decoration: none; 
+            z-index: 5; 
+        }
         .edit-icon-btn:hover { background-color: var(--color-gold); color: white; }
         
-        .delete-icon-btn { position: absolute; top: 12px; right: 50px; color: #dc3545; border: 2px solid #dc3545; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.8); text-decoration: none; z-index: 5; }
+        /* Delete Button (Middle) */
+        .delete-icon-btn { 
+            position: absolute; 
+            top: 10px; 
+            right: 38px; /* 10px + 24px + 4px gap */
+            color: #dc3545; 
+            border: 1px solid #dc3545; 
+            border-radius: 4px; 
+            width: 24px; 
+            height: 24px; 
+            font-size: 12px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            background: rgba(255, 255, 255, 0.9); 
+            text-decoration: none; 
+            z-index: 5; 
+        }
         .delete-icon-btn:hover { background-color: #dc3545; color: white; }
 
-        .detail-icon-btn { position: absolute; top: 12px; right: 88px; color: var(--color-blue-dark); border: 2px solid var(--color-blue-dark); border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.8); text-decoration: none; z-index: 5; }
+        /* Detail Button (Left most of group) */
+        .detail-icon-btn { 
+            position: absolute; 
+            top: 10px; 
+            right: 66px; /* 38px + 24px + 4px gap */
+            color: var(--color-blue-dark); 
+            border: 1px solid var(--color-blue-dark); 
+            border-radius: 4px; 
+            width: 24px; 
+            height: 24px; 
+            font-size: 12px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            background: rgba(255, 255, 255, 0.9); 
+            text-decoration: none; 
+            z-index: 5; 
+        }
         .detail-icon-btn:hover { background-color: var(--color-blue-dark); color: white; }
 
         .status-badge { display: block; width: 100%; padding: 8px 16px; border-radius: 6px; color: white; font-weight: 600; font-size: 13px; border: none; text-align: left; cursor: default; }
@@ -157,8 +229,7 @@
                                <i class="bi bi-eye"></i>
                             </a>
 
-                            <!-- 2. DELETE BUTTON (PERBAIKAN: GUNAKAN DATA-ATTRIBUTE) -->
-                            <!-- Kita simpan data di atribut th:data-* lalu ambil dengan this.getAttribute -->
+                            <!-- 2. DELETE BUTTON -->
                             <a href="javascript:void(0);" 
                                class="delete-icon-btn" 
                                title="Delete"
@@ -168,8 +239,7 @@
                                <i class="bi bi-trash"></i>
                             </a>
 
-                            <!-- 3. EDIT BUTTON (PERBAIKAN: GUNAKAN DATA-ATTRIBUTE) -->
-                            <!-- Sama, gunakan data-attribute untuk menghindari error karakter khusus -->
+                            <!-- 3. EDIT BUTTON -->
                             <a href="javascript:void(0);" 
                                class="edit-icon-btn" 
                                title="Edit"

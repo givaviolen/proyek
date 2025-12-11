@@ -3,21 +3,26 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background-color: #fcfbf4; border: 2px solid #000;">
                 <div class="modal-header" style="border-bottom: 2px solid #ddd;">
-                    <h5 class="modal-title fw-bold text-danger" id="deleteWatchListModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i> Konfirmasi Hapus</h5>
+                    <!-- Terjemahan: Konfirmasi Hapus -> Confirm Deletion -->
+                    <h5 class="modal-title fw-bold text-danger" id="deleteWatchListModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Deletion</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form th:action="@{/watchlists/delete}" method="post">
                     <input type="hidden" id="deleteWatchListId" name="id" />
                     <div class="modal-body text-center py-4">
                         <div class="mb-3"><i class="bi bi-trash text-danger" style="font-size: 3rem;"></i></div>
-                        <p class="mb-1">Apakah Anda yakin ingin menghapus:</p>
+                        <!-- Terjemahan: Apakah Anda yakin ingin menghapus: -> Are you sure you want to delete: -->
+                        <p class="mb-1">Are you sure you want to delete:</p>
                         <h4 class="fw-bold" id="deleteWatchListTitleDisplay">...</h4>
-                        <p class="text-muted small mt-2">Tindakan ini tidak dapat dibatalkan.</p>
+                        <!-- Terjemahan: Tindakan ini tidak dapat dibatalkan. -> This action cannot be undone. -->
+                        <p class="text-muted small mt-2">This action cannot be undone.</p>
                     </div>
                     <div class="modal-footer" style="border-top: 2px solid #ddd;">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <!-- Terjemahan: Batal -> Cancel -->
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <!-- TAMBAHAN: onclick="saveScrollPosition()" -->
-                        <button type="submit" class="btn btn-danger" onclick="saveScrollPosition()">Ya, Hapus</button>
+                        <!-- Terjemahan: Ya, Hapus -> Yes, Delete -->
+                        <button type="submit" class="btn btn-danger" onclick="saveScrollPosition()">Yes, Delete</button>
                     </div>
                 </form>
             </div>
