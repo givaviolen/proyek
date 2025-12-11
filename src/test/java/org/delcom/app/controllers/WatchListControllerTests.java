@@ -550,4 +550,114 @@ class WatchListControllerTests {
         mockMvc.perform(get("/api/watchlists/statistics"))
                 .andExpect(status().isForbidden());
     }
+    // 1. Coverage untuk A (Type == null) -> Harus Fail
+    @Test
+    void testCreate_TypeIsNull() throws Exception {
+        watchList.setType(null); 
+        
+        mockMvc.perform(post("/api/watchlists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(watchList)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Type harus Movie atau Series"));
+    }
+
+    // 2. Coverage untuk B && C (Type != null, Tapi bukan "Movie" dan bukan "Series") -> Harus Fail
+    // INI YANG BIASANYA BIKIN KUNING (MISSING BRANCH)
+    @Test
+    void testCreate_TypeIsInvalidString() throws Exception {
+        watchList.setType("Cartoon"); // Bukan Movie, Bukan Series
+        
+        mockMvc.perform(post("/api/watchlists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(watchList)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Type harus Movie atau Series"));
+    }
+
+    // 3. Coverage untuk Happy Path "Movie" (Valid) -> Harus Lolos if
+    @Test
+    void testCreate_TypeIsMovie() throws Exception {
+        watchList.setType("Movie");
+        
+        // Mock service success
+        when(authContext.isAuthenticated()).thenReturn(true);
+        when(authContext.getAuthUser()).thenReturn(user);
+        when(watchListService.createWatchList(any(), any(), eq("Movie"), any(), any(), any(), any(), any()))
+                .thenReturn(watchList);
+
+        mockMvc.perform(post("/api/watchlists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(watchList)))
+                .andExpect(status().isOk());
+    }
+
+    // 4. Coverage untuk Happy Path "Series" (Valid) -> Harus Lolos if
+    @Test
+    void testCreate_TypeIsSeries() throws Exception {
+        watchList.setType("Series");
+
+        // Mock service success
+        when(authContext.isAuthenticated()).thenReturn(true);
+        when(authContext.getAuthUser()).thenReturn(user);
+        when(watchListService.createWatchList(any(), any(), eq("Series"), any(), any(), any(), any(), any()))
+                .thenReturn(watchList);
+
+        mockMvc.perform(post("/api/watchlists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(watchList)))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void testCreate_StatusIsNull_ShouldDefaultToPlanToWatch() throws Exception {
+        // CASE 1: Status Null
+        watchList.setStatus(null);
+
+        when(authContext.isAuthenticated()).thenReturn(true);
+        when(authContext.getAuthUser()).thenReturn(user);
+        
+        // Verifikasi service dipanggil dengan "Plan to Watch"
+        when(watchListService.createWatchList(any(), any(), any(), any(), any(), any(), eq("Plan to Watch"), any()))
+                .thenReturn(watchList);
+
+        mockMvc.perform(post("/api/watchlists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(watchList)))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void testCreate_StatusIsEmpty_ShouldDefaultToPlanToWatch() throws Exception {
+        // CASE 2: Status String Kosong
+        watchList.setStatus(""); 
+
+        when(authContext.isAuthenticated()).thenReturn(true);
+        when(authContext.getAuthUser()).thenReturn(user);
+
+        // Verifikasi service dipanggil dengan "Plan to Watch"
+        when(watchListService.createWatchList(any(), any(), any(), any(), any(), any(), eq("Plan to Watch"), any()))
+                .thenReturn(watchList);
+
+        mockMvc.perform(post("/api/watchlists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(watchList)))
+                .andExpect(status().isOk());
+    }
+    @Test
+    void testCreate_StatusIsProvided_ShouldKeepStatus() throws Exception {
+        // CASE 3: Status Ada isinya
+        String customStatus = "Watching";
+        watchList.setStatus(customStatus);
+
+        when(authContext.isAuthenticated()).thenReturn(true);
+        when(authContext.getAuthUser()).thenReturn(user);
+
+        // Verifikasi service dipanggil dengan status ASLI ("Watching")
+        when(watchListService.createWatchList(any(), any(), any(), any(), any(), any(), eq(customStatus), any()))
+                .thenReturn(watchList);
+
+        mockMvc.perform(post("/api/watchlists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(watchList)))
+                .andExpect(status().isOk());
+    }
 }
