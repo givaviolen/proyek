@@ -6,7 +6,9 @@
                     <h5 class="modal-title fw-bold" id="addWatchListModalLabel" style="color: #1a1a1a;">Add New WatchList</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form th:action="@{/watchlists/add}" method="post" enctype="multipart/form-data">
+                
+                <!-- Form tanpa action, ditangani oleh JavaScript -->
+                <form id="addWatchListForm">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-4 mb-3 d-flex flex-column align-items-center">
@@ -15,27 +17,37 @@
                                     <img id="imgPreviewAdd" src="#" alt="Preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                                     <div id="placeholderAdd" class="text-center text-muted"><i class="bi bi-image fs-1"></i><div style="font-size: 12px;">No Image Selected</div></div>
                                 </div>
+                                <!-- ID ditambahkan: addCoverImage -->
                                 <input class="form-control form-control-sm" type="file" id="addCoverImage" name="coverImage" accept="image/*" onchange="previewImageAdd(this)">
                                 <div class="form-text text-muted" style="font-size: 11px;">Format: JPG, PNG, JPEG</div>
                             </div>
                             <div class="col-md-8">
-                                <div class="mb-3"><label class="form-label fw-bold">Title *</label><input type="text" class="form-control" name="title" placeholder="e.g., Inception" required></div>
+                                <!-- ID ditambahkan: addTitle -->
+                                <div class="mb-3"><label class="form-label fw-bold">Title *</label><input type="text" class="form-control" id="addTitle" name="title" placeholder="e.g., Inception" required></div>
                                 <div class="row">
-                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Type *</label><select class="form-select" name="type" required><option value="Movie">Movie</option><option value="Series">Series</option></select></div>
-                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Status *</label><select class="form-select" name="status" required><option value="Plan to Watch">Plan to Watch</option><option value="Watching">Watching</option><option value="Watched">Watched</option></select></div>
+                                    <!-- ID ditambahkan: addType -->
+                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Type *</label><select class="form-select" id="addType" name="type" required><option value="Movie">Movie</option><option value="Series">Series</option></select></div>
+                                    <!-- ID ditambahkan: addStatus -->
+                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Status *</label><select class="form-select" id="addStatus" name="status" required><option value="Plan to Watch">Plan to Watch</option><option value="Watching">Watching</option><option value="Watched">Watched</option></select></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Genre *</label><input type="text" class="form-control" name="genre" placeholder="e.g., Sci-Fi" required></div>
-                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Year *</label><input type="number" class="form-control" name="releaseYear" placeholder="2024" required></div>
+                                    <!-- ID ditambahkan: addGenre -->
+                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Genre *</label><input type="text" class="form-control" id="addGenre" name="genre" placeholder="e.g., Sci-Fi" required></div>
+                                    
+                                    <!-- UPDATE: Placeholder menjadi 2025 & ID ditambahkan: addReleaseYear -->
+                                    <div class="col-md-6 mb-3"><label class="form-label fw-bold">Year *</label><input type="number" class="form-control" id="addReleaseYear" name="releaseYear" placeholder="2025" required></div>
                                 </div>
-                                <div class="mb-3"><label class="form-label fw-bold">Rating (1-10) *</label><input type="number" class="form-control" name="rating" min="1" max="10" placeholder="Enter rating" required></div>
-                                <div class="mb-3"><label class="form-label fw-bold">Notes</label><textarea class="form-control" name="notes" rows="3"></textarea></div>
+                                <!-- ID ditambahkan: addRating -->
+                                <div class="mb-3"><label class="form-label fw-bold">Rating (1-10) *</label><input type="number" class="form-control" id="addRating" name="rating" min="1" max="10" step="0.1" placeholder="Enter rating" required></div>
+                                <!-- ID ditambahkan: addNotes -->
+                                <div class="mb-3"><label class="form-label fw-bold">Notes</label><textarea class="form-control" id="addNotes" name="notes" rows="3"></textarea></div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer" style="border-top: 2px solid #ddd;">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn" style="background-color: #0d6efd; color: white;">Save</button>
+                        <!-- UPDATE: Menggunakan onclick saveNewWatchList() -->
+                        <button type="button" class="btn" style="background-color: #0d6efd; color: white;" onclick="saveNewWatchList()">Save</button>
                     </div>
                 </form>
             </div>

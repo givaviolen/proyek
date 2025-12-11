@@ -30,7 +30,20 @@
         .text-watch { color: var(--color-blue-dark); }
         .text-list { color: var(--color-gold); }
         .header-right { display: flex; align-items: center; gap: 20px; z-index: 10; }
-        .user-greeting { color: #ffffff; font-size: 20px; font-weight: 400; }
+        
+        /* ========================================================= */
+        /* UPDATE: USER GREETING (LEBIH BESAR & TEBAL) */
+        /* ========================================================= */
+        .user-greeting { 
+            color: #ffffff; 
+            font-size: 24px; /* Diperbesar dari 20px */
+            font-weight: 700; /* Bold (Tebal) */
+            margin-right: 10px; /* Jarak ke tombol logout */
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Jarak antara teks dan emot tangan */
+        }
+        
         .btn-logout { display: flex; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 6px 15px; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 20px; background-color: rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
         .btn-logout:hover { background-color: var(--color-gold); border-color: var(--color-gold); color: var(--color-black); }
         
@@ -89,7 +102,10 @@
                 <div class="brand-text"><span class="text-watch">Watch</span><span class="text-list">List</span></div>
             </div>
             <div class="header-right">
-                <div class="user-greeting">Hello, <span th:text="${auth.name}">Username</span>!</div>
+                <!-- UPDATED: Hello Giva! 👋 (Statis, Bold, Besar) -->
+                <div class="user-greeting">
+                    Hello, <span th:text="${auth.name}">Username</span>!👋
+                </div>
                 <a th:href="@{/auth/logout}" class="btn-logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
             </div>
         </div>
